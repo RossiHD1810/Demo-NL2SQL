@@ -26,6 +26,8 @@ def tokenize_function(example):
     return example
 
 
+print(torch.cuda.is_available())
+print(torch.version.cuda)
 model_name='t5-small'
 tokenizer=AutoTokenizer.from_pretrained(model_name)
 original_model = AutoModelForSeq2SeqLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
@@ -112,11 +114,12 @@ finetuned_model=AutoModelForSeq2SeqLM.from_pretrained(model_name,torch_dtype=tor
 finetuned_model=finetuned_model.to('cuda')
 tokenizer=AutoTokenizer.from_pretrained(model_name)
 
-output_dir=f'./sql-training-{str(int(time.time()))}'
+output_dir=f'./sql-training-1741776900'
 training_args=TrainingArguments(
     output_dir=output_dir,
+    #resume_from_checkpoint="C:\Users\rossi\OneDrive\Documents\Universita\Tirocinio Intergea\Demo_LangChain\sql-training-1741776900\checkpoint-5500",
     learning_rate=5e-3,
-    num_train_epochs=2,
+    num_train_epochs=1,
     per_device_train_batch_size=16,
     per_device_eval_batch_size=16,
     weight_decay=0.01,
@@ -130,5 +133,7 @@ trainer=Trainer(
     train_dataset=tokenized_datasets['train'],
     eval_dataset=tokenized_datasets['validation'],
 )
+
+trainer.train(resume_from_checkpoint=True)
 
 
