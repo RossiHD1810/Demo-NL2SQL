@@ -187,6 +187,47 @@ print(f'BASELINE HUMAN ANSWER:\n{answer}\n')
 print(dash_line)
 print(f'MODEL GENERATION - Fine_Tuned:\n{output}')
 
+#-----Valutazione Performance-----
+question=dataset['test'][0:500]['question']
+context=dataset['test'][0:500]['context']
+human_baseline_answers=dataset['test'][0:500]['answer']
+
+original_model_answers=[]
+finetuned_model_answers=[]
+
+for idx, question in enumerate(question):
+    prompt=f"""Tables:
+    {context[idx]}
+    Question:{question}
+    Answer:
+    """
+input_ids=tokenizer(prompt,return_tensors='pt').input_ids
+input_ids=input_ids.to('cuda')
+
+human_baseline_text_output=human_baseline_answers[idx]
+
+original_model_outputs = original_model.generate(input_ids=input_ids, generation_config=GenerationConfig(max_new_tokens=300))
+original_model_text_output = tokenizer.decode(original_model_outputs[0], skip_special_tokens=True)
+original_model_answers.append(original_model_text_output)
+
+finetuned_model_outputs = finetuned_model.generate(input_ids=input_ids, generation_config=GenerationConfig(max_new_tokens=300))
+finetuned_model_text_output = tokenizer.decode(finetuned_model_outputs[0], skip_special_tokens=True)
+finetuned_model_answers.append(finetuned_model_text_output)
+
+zipped_summaries=list(zip(human_baseline_answers,original_model_answers,finetuned_model_answers))
+df=pd.DataFrame(zipped_summaries,columns=['human_baseline_answers','original_model_answers','finetuned_model_answers'])
+
+rouge=evaluate.load('rouge')
+
+original_model_results=rouge.compute(predictions=original_model_answers,references=human_baseline_answers[0:len(original_model_answers)],
+use_aggregator=True,use_stemmer=True)
+print('Original Model:')
+print(original_model_results)
+
+finetuned_model_results=rouge.compute(predictions=finetuned_model_answers,references=human_baseline_answers[0:len(finetuned_model_answers)],
+use_aggregator=True,use_stemmer=True)
+print('Fine-Tuned Model:')
+print(finetuned_model_results)
 
 
 
