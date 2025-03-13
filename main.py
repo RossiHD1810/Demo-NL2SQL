@@ -28,7 +28,7 @@ def tokenize_function(example):
 
 #print(torch.cuda.is_available())
 #print(torch.version.cuda)
-model_name='t5-small'
+model_name='Salesforce/codet5-base'
 tokenizer=AutoTokenizer.from_pretrained(model_name)
 original_model = AutoModelForSeq2SeqLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
 original_model = original_model.to('cuda')
@@ -85,7 +85,7 @@ print(tokenized_datasets)
 
 #-----Fine-Tuning-----
 try:
-    finetuned_model = AutoModelForSeq2SeqLM.from_pretrained("finetuned_model_2_epoch")
+    finetuned_model = AutoModelForSeq2SeqLM.from_pretrained("finetuned_codet5_2epoch")
     finetuned_model = finetuned_model.to('cuda')
     to_train = False
 
@@ -96,11 +96,11 @@ except:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 if to_train:
-    output_dir=f'./sql-training-1741776900'
+    output_dir=f'./sql-training-code-t5-2epoch'
     training_args = TrainingArguments(
         output_dir=output_dir,
         learning_rate=5e-3,
-        num_train_epochs=1,
+        num_train_epochs=2,
         per_device_train_batch_size=16,     # batch size per device during training
         per_device_eval_batch_size=16,      # batch size for evaluation
         weight_decay=0.01,
@@ -118,13 +118,14 @@ if to_train:
     
     trainer.train(resume_from_checkpoint=True)
     
-    finetuned_model.save_pretrained("finetuned_model_1_epoch")
+    finetuned_model.save_pretrained("finetuned_codet5_2epoch")
+    tokenizer.save_pretrained("finetuned_codet5_2epoch")
 
-finetuned_model = AutoModelForSeq2SeqLM.from_pretrained("finetuned_model_1_epoch")
+finetuned_model = AutoModelForSeq2SeqLM.from_pretrained("finetuned_codet5_2epoch")
 finetuned_model = finetuned_model.to('cuda')
 
 #index indica l'indice del dataset da testare
-index=25
+index=27
 #testing senza training (Zero Shot Inferencing)
 question=dataset['test'][index]['question']
 context=dataset['test'][index]['context']
@@ -188,9 +189,9 @@ print(dash_line)
 print(f'MODEL GENERATION - Fine_Tuned:\n{output}')
 
 #-----Valutazione Performance-----
-question=dataset['test'][0:500]['question']
-context=dataset['test'][0:500]['context']
-human_baseline_answers=dataset['test'][0:500]['answer']
+question=dataset['test'][0:14000]['question']
+context=dataset['test'][0:14000]['context']
+human_baseline_answers=dataset['test'][0:14000]['answer']
 
 original_model_answers=[]
 finetuned_model_answers=[]
