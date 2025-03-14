@@ -6,13 +6,9 @@ import time
 import evaluate
 import pandas as pd
 import numpy as np
-
 import warnings
 warnings.filterwarnings("ignore")
-PYTORCH_CUDA_ALLOC_CONF=expandable_segments=True
 
-
-#si occupa di trasformare dati testuali in un formato numerico adatto a dare in pasto alla LLM per l'addestramento
 def tokenize_function(example):
     
     start_prompt = "Tables:\n"
@@ -27,15 +23,6 @@ def tokenize_function(example):
     return example
 
 
-#print(torch.cuda.is_available())
-#print(torch.version.cuda)
-model_name='t5-small'
-tokenizer=AutoTokenizer.from_pretrained(model_name)
-original_model = AutoModelForSeq2SeqLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
-original_model = original_model.to('cuda')
-
-
-#carico i due dataset
 try:
     dataset = load_from_disk("merged_dataset")
     print("Loaded Merged Dataset")
@@ -75,87 +62,14 @@ except:
     tokenized_datasets.save_to_disk("tokenized_datasets")
     print("Tokenized and Saved Dataset")
 
-print(f"Shapes of the datasets:")
-print(f"Training: {tokenized_datasets['train'].shape}")
-print(f"Validation: {tokenized_datasets['validation'].shape}")
-print(f"Test: {tokenized_datasets['test'].shape}")
-
-print(tokenized_datasets)
-
-
-
-#-----Fine-Tuning-----
-try:
-    finetuned_model = AutoModelForSeq2SeqLM.from_pretrained("finetuned_codet5_2epoch")
-    finetuned_model = finetuned_model.to('cuda')
-    to_train = False
-
-except:
-    to_train = True
-    finetuned_model = AutoModelForSeq2SeqLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
-    finetuned_model = finetuned_model.to('cuda')
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-output_dir = f'./sql-training-code-t5-2epoch'
-if to_train:
-    training_args = TrainingArguments(
-    output_dir=output_dir,
-    num_train_epochs=4,
-    )
-
-    trainer = Trainer(
-        model=finetuned_model,
-        args=training_args,
-        train_dataset=tokenized_datasets['train'],
-        eval_dataset=tokenized_datasets['validation'],
-    )
-    
-    trainer.train()
-    
-    finetuned_model.save_pretrained("finetuned_codet5_2epoch")
-    tokenizer.save_pretrained("finetuned_codet5_2epoch")
-
-#tokenizer = AutoTokenizer.from_pretrained("mohsin-aslam/text2sql-finetuned-60M")
-#model = AutoModelForSeq2SeqLM.from_pretrained("mohsin-aslam/text2sql-finetuned-60M")
-#model = model.to('cuda')
-#finetuned_model = finetuned_model.to('cuda')
+tokenizer=AutoTokenizer.from_pretrained("t5-small")
 model = AutoModelForSeq2SeqLM.from_pretrained("mohsin-aslam/text2sql-finetuned-60M")
 model=model.to('cuda')
 
-#index indica l'indice del dataset da testare
-index=2
-#testing senza training (Zero Shot Inferencing)
+index=9
 question=dataset['test'][index]['question']
 context=dataset['test'][index]['context']
 answer=dataset['test'][index]['answer']
-
-prompt=f"""Tables:
-{context}
-Question:{question}
-Answer:
-"""
-inputs=tokenizer(prompt,return_tensors='pt')
-inputs=inputs.to('cuda')
-output=tokenizer.decode(
-    original_model.generate(
-        inputs["input_ids"],
-        max_new_tokens=200,
-    )[0],
-    skip_special_tokens=True
-)
-dash_line='-'.join('' for x in range(100))
-print(dash_line)
-print(f'#####Zero_Shot#####')
-print(f'INPUT PROMPT:\n{prompt}')
-print(dash_line)
-print(f'BASELINE HUMAN ANSWER: \n{answer}')
-print(dash_line)
-print(f'MODEL GENERATION - ZERO SHOT:\n{output}')
-
-#Risposta con modello finetuned
-question = dataset['test'][index]['question']
-context = dataset['test'][index]['context']
-answer = dataset['test'][index]['answer']
 
 prompt = f"""Tables:
 {context}
@@ -191,7 +105,6 @@ question=dataset['test'][0:14000]['question']
 context=dataset['test'][0:14000]['context']
 human_baseline_answers=dataset['test'][0:14000]['answer']
 
-original_model_answers=[]
 model_answers=[]
 
 for idx, question in enumerate(question):
@@ -205,28 +118,18 @@ input_ids=input_ids.to('cuda')
 
 human_baseline_text_output=human_baseline_answers[idx]
 
-original_model_outputs = original_model.generate(input_ids=input_ids, generation_config=GenerationConfig(max_new_tokens=300))
-original_model_text_output = tokenizer.decode(original_model_outputs[0], skip_special_tokens=True)
-original_model_answers.append(original_model_text_output)
+
 
 model_outputs = model.generate(input_ids=input_ids, generation_config=GenerationConfig(max_new_tokens=300))
 model_text_output = tokenizer.decode(model_outputs[0], skip_special_tokens=True)
 model_answers.append(model_text_output)
 
-zipped_summaries=list(zip(human_baseline_answers,original_model_answers,model_answers))
-df=pd.DataFrame(zipped_summaries,columns=['human_baseline_answers','original_model_answers','finetuned_model_answers'])
+zipped_summaries=list(zip(human_baseline_answers,model_answers))
+df=pd.DataFrame(zipped_summaries,columns=['human_baseline_answers','finetuned_model_answers'])
 
 rouge=evaluate.load('rouge')
-
-original_model_results=rouge.compute(predictions=original_model_answers,references=human_baseline_answers[0:len(original_model_answers)],
-use_aggregator=True,use_stemmer=True)
-print('Original Model:')
-print(original_model_results)
 
 finetuned_model_results=rouge.compute(predictions=model_answers,references=human_baseline_answers[0:len(model_answers)],
 use_aggregator=True,use_stemmer=True)
 print('Fine-Tuned Model:')
 print(finetuned_model_results)
-
-
-
