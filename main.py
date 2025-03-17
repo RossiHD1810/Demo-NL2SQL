@@ -58,9 +58,21 @@ except:
     dataset_ks_test   = load_dataset("knowrohit07/know_sql", split='validation[-20%:-10%]')
     dataset_ks_val    = load_dataset("knowrohit07/know_sql", split='validation[-10%:]')
 
-    dataset = DatasetDict({ 'train': interleave_datasets([dataset_scc_train, dataset_tts_train, dataset_ks_train]),
-                            'test': interleave_datasets([dataset_scc_test, dataset_tts_test, dataset_ks_test]),
-                            'validation': interleave_datasets([dataset_scc_val, dataset_tts_val, dataset_ks_val])})
+    dataset_synt_train = load_dataset("gretelai/synthetic_text_to_sql", split='train[:80%]')
+    dataset_synt_train = dataset_synt_train.remove_columns(['id','domain','domain_description','sql_complexity','sql_complexity_description','sql_task_type','sql_task_type_description','sql_explanation'])
+    dataset_synt_train = dataset_synt_train.rename_columns({'sql_prompt': 'question', 'sql_context': 'context', 'sql': 'answer'})
+    dataset_synt_test  = load_dataset("gretelai/synthetic_text_to_sql", split='train[-20%:-10%]')
+    dataset_synt_test = dataset_synt_test.remove_columns(['id','domain','domain_description','sql_complexity','sql_complexity_description','sql_task_type','sql_task_type_description','sql_explanation'])
+    dataset_synt_test = dataset_synt_test.rename_columns({'sql_prompt': 'question', 'sql_context': 'context', 'sql': 'answer'})
+    dataset_synt_val   = load_dataset("gretelai/synthetic_text_to_sql", split='train[-10%:]')
+    dataset_synt_val = dataset_synt_val.remove_columns(['id','domain','domain_description','sql_complexity','sql_complexity_description','sql_task_type','sql_task_type_description','sql_explanation'])
+    dataset_synt_val = dataset_synt_val.rename_columns({'sql_prompt': 'question', 'sql_context': 'context', 'sql': 'answer'})
+    print(dataset_synt_train.head(5))
+    print(dataset_synt_val.head(5))
+
+    dataset = DatasetDict({ 'train': interleave_datasets([dataset_scc_train, dataset_tts_train, dataset_ks_train,dataset_synt_train]),
+                            'test': interleave_datasets([dataset_scc_test, dataset_tts_test, dataset_ks_test,dataset_synt_test]),
+                            'validation': interleave_datasets([dataset_scc_val, dataset_tts_val, dataset_ks_val,dataset_synt_val])})
 
     dataset.save_to_disk("merged_dataset")
     print("Merged and Saved Dataset")
