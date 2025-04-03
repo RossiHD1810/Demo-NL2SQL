@@ -25,8 +25,8 @@ try:
     print(f"Test dataset loaded: {len(test_dataset)} samples")
     
     # Selezione random di n elementi per il test rapido
-    n=200 #Numero sample test
-    random.seed(50)  # Per riproducibilità
+    n=300 #Numero sample test
+    random.seed(52)  # Per riproducibilità
     test_indices = random.sample(range(len(test_dataset)), n)
     test_subset = test_dataset.select(test_indices)
     print(f"N°{n} samples selected for quick testing")
@@ -88,7 +88,7 @@ def generate_sql(schema, question, max_tokens=256):
     response = model(
         prompt,
         max_tokens=max_tokens,
-        temperature=0.0,  
+        temperature=0.1,  
         top_p=1.0,        
         top_k=1,          
         echo=False        
