@@ -32,21 +32,23 @@ if __name__ == '__main__':
 
     #Caricamento Dataset
     try:
-        dataset = load_from_disk("merged_dataset_optimized")
+        #dataset = load_from_disk("t-sql_dataset_corrected")
+        dataset=load_dataset("json",data_files={"train":"t-sql_dataset_corrected/train.json"})
         print("Loaded Saved Dataset")
     except:
-        
+        '''
         dataset_tts_train = load_dataset("Clinton/Text-to-sql-v1", split='train[:100%]')
         dataset_tts_train = dataset_tts_train.remove_columns(['source', 'text'])
         dataset_tts_train = dataset_tts_train.rename_columns({'instruction': 'question', 'input': 'context', 'response': 'answer'})
         
         dataset = DatasetDict({ 'train': interleave_datasets([dataset_tts_train]) })
-        dataset.save_to_disk("merged_dataset_optimized")
+        dataset.save_to_disk("merged_dataset_optimized")'
+        '''
         print("Error loading saved dataset, downloaded loaded new one")
         
     #Caricamento Modello e Tokenizer
     model,tokenizer=FastLanguageModel.from_pretrained(
-        model_name="unsloth/Meta-Llama-3.1-8B-bnb-4bit",
+        model_name="unsloth/codellama-7b-bnb-4bit",
         max_seq_length=max_seq_length,
         dtype=dtype,
         load_in_4bit=load_in_4bit
@@ -91,7 +93,7 @@ if __name__ == '__main__':
         max_seq_length=max_seq_length,
         packing=False,
         args=TrainingArguments(
-            num_train_epochs=2,
+            num_train_epochs=4,
             per_device_train_batch_size=2,
             gradient_accumulation_steps=4,
             warmup_steps=300,
@@ -115,5 +117,5 @@ if __name__ == '__main__':
         )
 
     #Avvio Training con checkpoint e poi salvataggio modello alla fine
-    trainer_stats=trainer.train(resume_from_checkpoint=True)
+    trainer_stats=trainer.train()
     model.save_pretrained_gguf("ggufmodel_llama_3.1_v3",tokenizer,quantization_method="q4_k_m")
