@@ -1,0 +1,1852 @@
+Number of testing samples: 300
+Exact Match (EM): 0.6600 (66.00%)
+
+--- All Samples Tested ---
+Example 1:
+Input: Name the most pick number for cfl team being edmonton eskimos
+Prediction: SELECT MAX(pick__number) FROM table_16575609_4 WHERE cfl_team = "Edmonton Eskimos"
+Reference : SELECT MAX(pick__number) FROM table_16575609_4 WHERE cfl_team = "Edmonton Eskimos"
+Match: True
+
+Example 2:
+Input: Which candidate won 88 votes in Queens in 1921?
+Prediction: SELECT queens FROM table_1108394_47 WHERE 1921 = "88"
+Reference : SELECT 1921 FROM table_1108394_47 WHERE queens = "88"
+Match: False
+
+Example 3:
+Input: What was the score for the home team St Kilda?
+Prediction: SELECT "Home team score" FROM table_74582 WHERE "Home team" = 'st kilda'
+Reference : SELECT "Home team score" FROM table_74582 WHERE "Home team" = 'st kilda'
+Match: True
+
+Example 4:
+Input: return me the paper after 2000 in Databases area with more than 200 citations .
+Prediction: SELECT publication.title FROM domain, domain_publication, publication WHERE domain.did = domain_publication.did AND domain.name = 'Databases' AND publication.pid = domain_publication.pid AND publication.citation_num > 200 AND publication.year > 2000
+Reference : SELECT publication.title FROM domain, domain_publication, publication WHERE domain.did = domain_publication.did AND domain.name = 'Databases' AND publication.citation_num > 200 AND publication.pid = domain_publication.pid AND publication.year > 2000
+Match: False
+
+Example 5:
+Input: Return the average price of products that have each category code in a bar chart, and order Y in desc order please.
+Prediction: SELECT product_category_code, AVG(product_price) FROM Products GROUP BY product_category_code ORDER BY AVG(product_price) DESC
+Reference : SELECT product_category_code, AVG(product_price) FROM Products GROUP BY product_category_code ORDER BY AVG(product_price) DESC
+Match: True
+
+Example 6:
+Input: Who was the owner of Give a Toast after 1985?
+Prediction: SELECT owner FROM table_name_43 WHERE year > 1985 AND winner = "give a toast"
+Reference : SELECT owner FROM table_name_43 WHERE year > 1985 AND winner = "give a toast"
+Match: True
+
+Example 7:
+Input: For course 169 with Prof. James Blanton , is the class held Fridays ?
+Prediction: SELECT COUNT(*) = 0 FROM course, course_offering, instructor, offering_instructor WHERE course.course_id = course_offering.course_id AND course.number = 169 AND course_offering.friday = 'N' AND instructor.name LIKE '%James Blanton%' AND offering_instructor.instructor_id = instructor.instructor_id AND offering_instructor.offering_id = course_offering.offering_id
+Reference : SELECT COUNT(*) = 0 FROM course INNER JOIN course_offering ON course.course_id = course_offering.course_id INNER JOIN offering_instructor ON offering_instructor.offering_id = course_offering.offering_id INNER JOIN instructor ON offering_instructor.instructor_id = instructor.instructor_id WHERE course.number = 169 AND course_offering.friday = 'N' AND instructor.name LIKE '%James Blanton%'
+Match: False
+
+Example 8:
+Input: What is the average SP+FS for Denise Biellmann, and a Rank larger than 5?
+Prediction: SELECT AVG("SP+FS") FROM table_57228 WHERE "Name" = 'denise biellmann' AND "Rank" > '5'
+Reference : SELECT AVG("SP+FS") FROM table_57228 WHERE "Name" = 'denise biellmann' AND "Rank" > '5'
+Match: True
+
+Example 9:
+Input: What Country has a 67 score by Phil Mickelson?
+Prediction: SELECT "Country" FROM table_59174 WHERE "Score" = '67' AND "Player" = 'phil mickelson'
+Reference : SELECT "Country" FROM table_59174 WHERE "Score" = '67' AND "Player" = 'phil mickelson'
+Match: True
+
+Example 10:
+Input: what is the number of works titled salome ?
+Prediction: SELECT COUNT(*) FROM table_204_969 WHERE "title" = 'salome'
+Reference : SELECT COUNT("title") FROM table_204_969 WHERE "title" = 'salome'
+Match: False
+
+Example 11:
+Input: What is Event, when Position is 4th?
+Prediction: SELECT "Event" FROM table_42268 WHERE "Position" = '4th'
+Reference : SELECT "Event" FROM table_42268 WHERE "Position" = '4th'
+Match: True
+
+Example 12:
+Input: what were the marital status of patient 44848 in the first hospital encounter?
+Prediction: SELECT admissions.marital_status FROM admissions WHERE admissions.subject_id = 44848 AND NOT admissions.dischtime IS NULL ORDER BY admissions.admittime LIMIT 1
+Reference : SELECT admissions.marital_status FROM admissions WHERE admissions.subject_id = 44848 AND NOT admissions.dischtime IS NULL ORDER BY admissions.admittime LIMIT 1
+Match: True
+
+Example 13:
+Input: What is Distance, when Venue is 'Belgrade'?
+Prediction: SELECT distance FROM table_name_39 WHERE venue = "belgrade"
+Reference : SELECT distance FROM table_name_39 WHERE venue = "belgrade"
+Match: True
+
+Example 14:
+Input: Tags with negative average question score.
+Prediction: 
+Reference : WITH Questions AS (SELECT Id, CAST(Score AS FLOAT) AS Score FROM Posts WHERE PostTypeId = 1), Answers AS (SELECT ParentId, CAST(Score AS FLOAT) AS Score FROM Posts WHERE PostTypeId = 2), TaggedQuestions AS (SELECT pt.TagId, AVG(q.Score) AS Score FROM Questions AS q INNER JOIN PostTags AS pt ON q.Id = pt.PostId GROUP BY pt.TagId), TaggedAnswers AS (SELECT pt.TagId, AVG(a.Score) AS Score FROM Answers AS a INNER JOIN PostTags AS pt ON a.ParentId = pt.PostId GROUP BY pt.TagId) SELECT t.TagName, q.Score AS QuestionScore, a.Score AS AnswerScore FROM Tags AS t FULL OUTER JOIN TaggedQuestions AS q ON q.TagId = t.Id FULL OUTER JOIN TaggedAnswers AS a ON a.TagId = t.Id WHERE q.Score <= 0 ORDER BY t.Count DESC
+Match: False
+
+Example 15:
+Input: What is Matches, when Year is '2003'?
+Prediction: SELECT matches FROM table_name_72 WHERE year = 2003
+Reference : SELECT matches FROM table_name_72 WHERE year = "2003"
+Match: False
+
+Example 16:
+Input: How often does the class YIDDISH 531 meet ?
+Prediction: 
+Reference : SELECT DISTINCT course_offering.friday, course_offering.monday, course_offering.saturday, course_offering.sunday, course_offering.thursday, course_offering.tuesday, course_offering.wednesday FROM course INNER JOIN course_offering ON course.course_id = course_offering.course_id INNER JOIN semester ON semester.semester_id = course_offering.semester WHERE course.department = 'YIDDISH' AND course.number = 531 AND semester.semester = 'WN' AND semester.year = 2016
+Match: False
+
+Example 17:
+Input: what has the difference in weight of patient 7742 second measured on the last hospital visit compared to the first value measured on the last hospital visit?
+Prediction: 
+Reference : SELECT (SELECT chartevents.valuenum FROM chartevents WHERE chartevents.icustay_id IN (SELECT icustays.icustay_id FROM icustays WHERE icustays.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 7742 AND NOT admissions.dischtime IS NULL ORDER BY admissions.admittime DESC LIMIT 1)) AND chartevents.itemid IN (SELECT d_items.itemid FROM d_items WHERE d_items.label = 'admit wt' AND d_items.linksto = 'chartevents') ORDER BY chartevents.charttime LIMIT 1 OFFSET 1) - (SELECT chartevents.valuenum FROM chartevents WHERE chartevents.icustay_id IN (SELECT icustays.icustay_id FROM icustays WHERE icustays.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 7742 AND NOT admissions.dischtime IS NULL ORDER BY admissions.admittime DESC LIMIT 1)) AND chartevents.itemid IN (SELECT d_items.itemid FROM d_items WHERE d_items.label = 'admit wt' AND d_items.linksto = 'chartevents') ORDER BY chartevents.charttime LIMIT 1)
+Match: False
+
+Example 18:
+Input: how many patients with hypoxemia received iv therapy?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id INNER JOIN prescriptions ON demographic.hadm_id = prescriptions.hadm_id WHERE diagnoses.short_title = "Hypoxemia" AND prescriptions.route = "IV"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id INNER JOIN prescriptions ON demographic.hadm_id = prescriptions.hadm_id WHERE diagnoses.long_title = "Hypoxemia" AND prescriptions.route = "IV"
+Match: False
+
+Example 19:
+Input: What is the hometown of the pitcher who's school was Saint Joseph Regional High School?
+Prediction: SELECT hometown FROM table_11677100_18 WHERE position = "Pitcher" AND school = "Saint Joseph Regional High School"
+Reference : SELECT hometown FROM table_11677100_18 WHERE position = "Pitcher" AND school = "Saint Joseph Regional High school"
+Match: False
+
+Example 20:
+Input: What is the western title for the puzzle genre?
+Prediction: SELECT western_title FROM table_name_56 WHERE genre = "puzzle"
+Reference : SELECT western_title FROM table_name_56 WHERE genre = "puzzle"
+Match: True
+
+Example 21:
+Input: Who wrote episode 23 in the season?
+Prediction: SELECT written_by FROM table_27823359_1 WHERE season__number = 23
+Reference : SELECT written_by FROM table_27823359_1 WHERE season__number = "23"
+Match: False
+
+Example 22:
+Input: What is To par, when Country is 'Spain'?
+Prediction: SELECT "To par" FROM table_60482 WHERE "Country" = 'spain'
+Reference : SELECT "To par" FROM table_60482 WHERE "Country" = 'spain'
+Match: True
+
+Example 23:
+Input: how many chiefs are from new york ?
+Prediction: SELECT COUNT("name") FROM table_203_760 WHERE "state" = 'new york'
+Reference : SELECT COUNT("name") FROM table_203_760 WHERE "state" = 'new york'
+Match: True
+
+Example 24:
+Input: What model has de vaux continental as the make?
+Prediction: SELECT model FROM table_name_50 WHERE make = "de vaux continental"
+Reference : SELECT model FROM table_name_50 WHERE make = "de vaux continental"
+Match: True
+
+Example 25:
+Input: What jockey rode for Michael House before 2012
+Prediction: SELECT jockey FROM table_name_70 WHERE year < 2012 AND owner = "michael house"
+Reference : SELECT jockey FROM table_name_70 WHERE year < 2012 AND owner = "michael house"
+Match: True
+
+Example 26:
+Input: What is Package/Option, when Language is Italian, and when Television Service is Sky Radio?
+Prediction: SELECT package_option FROM table_name_51 WHERE language = "italian" AND television_service = "sky radio"
+Reference : SELECT package_option FROM table_name_51 WHERE language = "italian" AND television_service = "sky radio"
+Match: True
+
+Example 27:
+Input: What is the structure of the document with the least number of accesses?
+Prediction: SELECT document_structure_description FROM document_structures AS T1 JOIN documents AS T2 ON T1.document_structure_code = T2.document_structure_code GROUP BY document_structure_code ORDER BY COUNT(*) LIMIT 1
+Reference : SELECT t2.document_structure_description FROM documents AS t1 JOIN document_structures AS t2 ON t1.document_structure_code = t2.document_structure_code GROUP BY t1.document_structure_code ORDER BY COUNT(*) DESC LIMIT 1
+Match: False
+
+Example 28:
+Input: What is the language of the film directed by Hans Kristensen?
+Prediction: SELECT language FROM table_name_14 WHERE director = "hans kristensen"
+Reference : SELECT language FROM table_name_14 WHERE director = "hans kristensen"
+Match: True
+
+Example 29:
+Input: Name the role for studio of rep with sheila mannors leading lady and title of westward ho
+Prediction: SELECT role FROM table_name_11 WHERE studio = "rep" AND leading_lady = "sheila mannors" AND title = "westward ho"
+Reference : SELECT role FROM table_name_11 WHERE studio = "rep" AND leading_lady = "sheila mannors" AND title = "westward ho"
+Match: True
+
+Example 30:
+Input: Find the full names of employees living in the city of Calgary.
+Prediction: SELECT T1.firstname, T1.lastname FROM employee AS T1 JOIN customer AS T2 ON T1.customerid = T2.customerid WHERE T2.city = "Calgary"
+Reference : SELECT firstname, lastname FROM employee WHERE city = "Calgary"
+Match: False
+
+Example 31:
+Input: Who was the defensive award winner when the rookie award was given to Daryl Veltman and the offensive award was given to Mark Steenhuis?
+Prediction: SELECT defensive FROM table_14132239_3 WHERE rookie = "Daryl Veltman" AND offensive = "Mark Steenhuis"
+Reference : SELECT defensive FROM table_14132239_3 WHERE rookie = "Daryl Veltman" AND offensive = "Mark Steenhuis"
+Match: True
+
+Example 32:
+Input: how many of the patients with epistaxis had drug adminitered via ng route?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id INNER JOIN prescriptions ON demographic.hadm_id = prescriptions.hadm_id WHERE diagnoses.short_title = "Epistaxis" AND prescriptions.route = "NG"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id INNER JOIN prescriptions ON demographic.hadm_id = prescriptions.hadm_id WHERE diagnoses.short_title = "Epistaxis" AND prescriptions.route = "NG"
+Match: True
+
+Example 33:
+Input: patient 4401 has received any lab tests during the current hospital encounter?
+Prediction: SELECT COUNT(*) > 0 FROM labevents WHERE labevents.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 4401 AND admissions.dischtime IS NULL)
+Reference : SELECT COUNT(*) > 0 FROM labevents WHERE labevents.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 4401 AND admissions.dischtime IS NULL)
+Match: True
+
+Example 34:
+Input: List all tips for ' Cafe Zinho ' in Pennsylvania in 2010 .
+Prediction: SELECT tip.text FROM business, tip WHERE business.name = 'Cafe Zinho' AND business.state = 'Pennsylvania' AND tip.business_id = business.business_id AND tip.year = 2010
+Reference : SELECT tip.text FROM business, tip WHERE business.name = 'Cafe Zinho' AND business.state = 'Pennsylvania' AND tip.business_id = business.business_id AND tip.year = 2010
+Match: True
+
+Example 35:
+Input: WHat in 2005 has a Win % of 82.61?
+Prediction: SELECT "2005" FROM table_75961 WHERE "Win %" = '82.61'
+Reference : SELECT "2005" FROM table_75961 WHERE "Win %" = '82.61'
+Match: True
+
+Example 36:
+Input: what is the id and trade name of the medicines can interact with at least 3 enzymes?, and I want to show by the x axis from high to low.
+Prediction: SELECT Trade_Name, id FROM medicine AS T1 JOIN medicine_enzyme_interaction AS T2 ON T2.medicine_id = T1.id ORDER BY Trade_Name DESC
+Reference : SELECT Trade_Name, id FROM medicine AS T1 JOIN medicine_enzyme_interaction AS T2 ON T2.medicine_id = T1.id ORDER BY Trade_Name DESC
+Match: True
+
+Example 37:
+Input: Can you tell me the sum of Wins that has the Club of abuls smiltene, and the Goals smaller than 18?
+Prediction: SELECT SUM("Wins") FROM table_60852 WHERE "Club" = 'abuls smiltene' AND "Goals against" < '18'
+Reference : SELECT SUM("Wins") FROM table_60852 WHERE "Club" = 'abuls smiltene' AND "Goals for" < '18'
+Match: False
+
+Example 38:
+Input: Who won stage 18?
+Prediction: SELECT "Winner" FROM table_1058 WHERE "Stage" = '18'
+Reference : SELECT "Winner" FROM table_1058 WHERE "Stage" = '18'
+Match: True
+
+Example 39:
+Input: What is Kerry J. Donley's First Election date?
+Prediction: SELECT "First Election" FROM table_13376 WHERE "Name" = 'kerry j. donley'
+Reference : SELECT "First Election" FROM table_13376 WHERE "Name" = 'kerry j. donley'
+Match: True
+
+Example 40:
+Input: Find all the order items whose product id is 11. What are the order item ids?
+Prediction: SELECT order_item_id FROM order_items WHERE product_id = 11
+Reference : SELECT order_item_id FROM order_items WHERE product_id = 11
+Match: True
+
+Example 41:
+Input: What School did Terrence Jones play for?
+Prediction: SELECT school FROM table_name_40 WHERE player = "terrence jones"
+Reference : SELECT school FROM table_name_40 WHERE player = "terrence jones"
+Match: True
+
+Example 42:
+Input: What is the average Season when the venue was circuit de nevers magny-cours, and Drivers was more than 30?
+Prediction: SELECT AVG(season) FROM table_name_64 WHERE venue = "circuit de nevers magny-cours" AND drivers > 30
+Reference : SELECT AVG(season) FROM table_name_64 WHERE venue = "circuit de nevers magny-cours" AND drivers > 30
+Match: True
+
+Example 43:
+Input: What is the price of each product supplied by supplier id 3? Return a bar chart, and rank y-axis in asc order.
+Prediction: SELECT product_name, product_price FROM Products AS T1 JOIN Product_Suppliers AS T2 ON T1.product_id = T2.product_id WHERE T2.supplier_id = 3 ORDER BY product_price
+Reference : SELECT product_name, product_price FROM Product_Suppliers AS T1 JOIN Products AS T2 ON T1.product_id = T2.product_id WHERE T1.supplier_id = 3 ORDER BY product_price
+Match: False
+
+Example 44:
+Input: In what Venue was Surrey the Opposition in the 2nd Wicket?
+Prediction: SELECT venue FROM table_name_45 WHERE opposition = "surrey" AND wicket = "2nd"
+Reference : SELECT venue FROM table_name_45 WHERE opposition = "surrey" AND wicket = "2nd"
+Match: True
+
+Example 45:
+Input: What are the reigns and days held of all wrestlers?
+Prediction: SELECT reign, days_held FROM wrestler
+Reference : SELECT reign, days_held FROM wrestler
+Match: True
+
+Example 46:
+Input: What is the intergiro classification of alexander gontchenkov?
+Prediction: SELECT intergiro_classification FROM table_12261926_2 WHERE winner = "Alexander Gontchenkov"
+Reference : SELECT intergiro_classification FROM table_12261926_2 WHERE winner = "Alexander Gontchenkov"
+Match: True
+
+Example 47:
+Input: Where is the college where Keith Hartwig plays?
+Prediction: SELECT college FROM table_10361625_1 WHERE player_name = "Keith Hartwig"
+Reference : SELECT college FROM table_10361625_1 WHERE player_name = "Keith Hartwig"
+Match: True
+
+Example 48:
+Input: What is the Outcome of the game against Frederic Jeanclaude?
+Prediction: SELECT outcome FROM table_name_55 WHERE opponent = "frederic jeanclaude"
+Reference : SELECT outcome FROM table_name_55 WHERE opponent = "frederic jeanclaude"
+Match: True
+
+Example 49:
+Input: What is the lowest value for apps in 2009 season in a division less than 1?
+Prediction: SELECT MIN("Apps") FROM table_34907 WHERE "Season" = '2009' AND "Division" < '1'
+Reference : SELECT MIN("Apps") FROM table_34907 WHERE "Season" = '2009' AND "Division" < '1'
+Match: True
+
+Example 50:
+Input: Which Drawn has Points for of 782?
+Prediction: SELECT "Drawn" FROM table_46211 WHERE "Points for" = '782'
+Reference : SELECT "Drawn" FROM table_46211 WHERE "Points for" = '782'
+Match: True
+
+Example 51:
+Input: For those employees who was hired before 2002-06-21, visualize a line chart about the change of salary over hire_date , and order x axis in asc order.
+Prediction: SELECT HIRE_DATE, SALARY FROM employees WHERE HIRE_DATE < '2002-06-21' ORDER BY HIRE_DATE
+Reference : SELECT HIRE_DATE, SALARY FROM employees WHERE HIRE_DATE < '2002-06-21' ORDER BY HIRE_DATE
+Match: True
+
+Example 52:
+Input: Which NFL Recap had a Kickoff of 7:00pm edt?
+Prediction: SELECT nfl_recap FROM table_name_16 WHERE kickoff = "7:00pm edt"
+Reference : SELECT nfl_recap FROM table_name_16 WHERE kickoff = "7:00pm edt"
+Match: True
+
+Example 53:
+Input: What is the sum of the FAC/LC apps with less than 25 PC apps and a UEFA YC less than 0?
+Prediction: SELECT SUM("FAC / LC Apps") FROM table_8286 WHERE "PL Apps" < '25' AND "UEFA YC" < '0'
+Reference : SELECT SUM("FAC / LC Apps") FROM table_8286 WHERE "PL Apps" < '25' AND "UEFA YC" < '0'
+Match: True
+
+Example 54:
+Input: Show the race class and number of races in each class.
+Prediction: SELECT Class, COUNT(*) FROM race GROUP BY Class
+Reference : SELECT Class, COUNT(*) FROM race GROUP BY Class
+Match: True
+
+Example 55:
+Input: What visiting team has a record of 4-3?
+Prediction: SELECT "Visitor" FROM table_62185 WHERE "Record" = '4-3'
+Reference : SELECT "Visitor" FROM table_62185 WHERE "Record" = '4-3'
+Match: True
+
+Example 56:
+Input: What was the away team's score when the home team scored 16.19 (115)?
+Prediction: SELECT "Away team score" FROM table_55231 WHERE "Home team score" = '16.19 (115)'
+Reference : SELECT "Away team score" FROM table_55231 WHERE "Home team score" = '16.19 (115)'
+Match: True
+
+Example 57:
+Input: Which Surface has a Date of 3 october 2003?
+Prediction: SELECT "Surface" FROM table_36763 WHERE "Date" = '3 october 2003'
+Reference : SELECT "Surface" FROM table_36763 WHERE "Date" = '3 october 2003'
+Match: True
+
+Example 58:
+Input: what is the number of patients whose gender is f and diagnoses short title is depress psychosis-unspec?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id WHERE demographic.gender = "F" AND diagnoses.short_title = "Depress psychosis-unspec"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id WHERE demographic.gender = "F" AND diagnoses.short_title = "Depress psychosis-unspec"
+Match: True
+
+Example 59:
+Input: return me all the papers in VLDB after 2000 in ' University of Michigan ' .
+Prediction: SELECT publication.title FROM author, journal, organization, publication, writes WHERE journal.name = 'VLDB' AND organization.name = 'University of Michigan' AND organization.oid = author.oid AND publication.jid = journal.jid AND publication.year > 2000 AND writes.aid = author.aid AND writes.pid = publication.pid
+Reference : SELECT publication.title FROM author, journal, organization, publication, writes WHERE journal.name = 'VLDB' AND organization.name = 'University of Michigan' AND organization.oid = author.oid AND publication.jid = journal.jid AND publication.year > 2000 AND writes.aid = author.aid AND writes.pid = publication.pid
+Match: True
+
+Example 60:
+Input: Which class is the easiest to get the ULCS requirement ?
+Prediction: 
+Reference : SELECT DISTINCT course.department, course.name, course.number, program_course.workload, program_course.workload FROM course, program_course WHERE program_course.category LIKE '%ULCS%' AND program_course.course_id = course.course_id AND program_course.workload = (SELECT MIN(PROGRAM_COURSEalias1.workload) FROM program_course AS PROGRAM_COURSEalias1 WHERE PROGRAM_COURSEalias1.category LIKE '%ULCS%')
+Match: False
+
+Example 61:
+Input: Who was the writer that the director was Alice Troughton and the producer was Phil Collinson?
+Prediction: SELECT "Writer" FROM table_48773 WHERE "Director" = 'alice troughton' AND "Producer" = 'phil collinson'
+Reference : SELECT "Writer" FROM table_48773 WHERE "Producer" = 'phil collinson' AND "Director" = 'alice troughton'
+Match: False
+
+Example 62:
+Input: What country was rank 4?
+Prediction: SELECT country FROM table_name_43 WHERE rank = 4
+Reference : SELECT country FROM table_name_43 WHERE rank = "4"
+Match: False
+
+Example 63:
+Input: What are the first, middle, and last names of all individuals, ordered by last name?
+Prediction: SELECT individual_first_name, individual_middle_name, individual_last_name FROM individuals ORDER BY individual_last_name
+Reference : SELECT individual_first_name, individual_middle_name, individual_last_name FROM individuals ORDER BY individual_last_name
+Match: True
+
+Example 64:
+Input: For those employees whose salary is in the range of 8000 and 12000 and commission is not null or department number does not equal to 40, return a bar chart about the distribution of job_id and the amount of job_id , and group by attribute job_id, I want to show y-axis in descending order please.
+Prediction: 
+Reference : SELECT JOB_ID, COUNT(JOB_ID) FROM employees WHERE SALARY BETWEEN 8000 AND 12000 AND COMMISSION_PCT <> "null" OR DEPARTMENT_ID <> 40 GROUP BY JOB_ID ORDER BY COUNT(JOB_ID) DESC
+Match: False
+
+Example 65:
+Input: Bar graph to show how many nationality from different nationality, list in desc by the total number.
+Prediction: 
+Reference : SELECT Nationality, COUNT(Nationality) FROM ship GROUP BY Nationality ORDER BY COUNT(Nationality) DESC
+Match: False
+
+Example 66:
+Input: what is the cheapest fare for flights from BOSTON to DALLAS
+Prediction: 
+Reference : SELECT DISTINCT fare.fare_id FROM airport_service AS AIRPORT_SERVICE_0, airport_service AS AIRPORT_SERVICE_1, city AS CITY_0, city AS CITY_1, fare, flight, flight_fare WHERE CITY_0.city_code = AIRPORT_SERVICE_0.city_code AND CITY_0.city_name = 'BOSTON' AND CITY_1.city_code = AIRPORT_SERVICE_1.city_code AND CITY_1.city_name = 'DALLAS' AND fare.one_direction_cost = (SELECT MIN(FAREalias1.one_direction_cost) FROM airport_service AS AIRPORT_SERVICEalias2, airport_service AS AIRPORT_SERVICEalias3, city AS CITYalias2, city AS CITYalias3, fare AS FAREalias1, flight AS FLIGHTalias1, flight_fare AS FLIGHT_FAREalias1 WHERE CITYalias2.city_code = AIRPORT_SERVICEalias2.city_code AND CITYalias2.city_name = 'BOSTON' AND CITYalias3.city_code = AIRPORT_SERVICEalias3.city_code AND CITYalias3.city_name = 'DALLAS' AND FLIGHT_FAREalias1.fare_id = FAREalias1.fare_id AND FLIGHTalias1.flight_id = FLIGHT_FAREalias1.flight_id AND FLIGHTalias1.from_airport = AIRPORT_SERVICEalias2.airport_code AND FLIGHTalias1.to_airport = AIRPORT_SERVICEalias3.airport_code) AND flight_fare.fare_id = fare.fare_id AND flight.flight_id = flight_fare.flight_id AND flight.from_airport = AIRPORT_SERVICE_0.airport_code AND flight.to_airport = AIRPORT_SERVICE_1.airport_code
+Match: False
+
+Example 67:
+Input: How many open era titles does the team with their first title in 1925 have?
+Prediction: SELECT COUNT("Open Era") FROM table_1638 WHERE "First title" = '1925'
+Reference : SELECT "Open Era" FROM table_1638 WHERE "First title" = '1925'
+Match: False
+
+Example 68:
+Input: when was the last time patient 96833 had a medication prescribed via sc route during their current hospital visit?
+Prediction: 
+Reference : SELECT prescriptions.startdate FROM prescriptions WHERE prescriptions.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 96833 AND admissions.dischtime IS NULL) AND prescriptions.route = 'sc' ORDER BY prescriptions.startdate DESC LIMIT 1
+Match: False
+
+Example 69:
+Input: What is the total losses when Hay is the golden river and there are more than 2 byes?
+Prediction: SELECT COUNT("Losses") FROM table_59646 WHERE "Golden Rivers" = 'hay' AND "Byes" > '2'
+Reference : SELECT COUNT("Losses") FROM table_59646 WHERE "Golden Rivers" = 'hay' AND "Byes" > '2'
+Match: True
+
+Example 70:
+Input: What date was Adelaide the home team?
+Prediction: SELECT "Date" FROM table_20772 WHERE "Home team" = 'Adelaide'
+Reference : SELECT "Date" FROM table_20772 WHERE "Home team" = 'Adelaide'
+Match: True
+
+Example 71:
+Input: What is the total number of Goals with a nationality of England, and position of DF, and a Crewe Alexandra career is 1958 1962, and less than 170 appearances?
+Prediction: SELECT COUNT("Goals") FROM table_8871 WHERE "Nationality" = 'england' AND "Position" = 'df' AND "Crewe Alexandra career" = '1958–1962' AND "Appearances" < '170'
+     
+     
+     
+    SELECT COUNT("Goals") FROM table_8871 WHERE "Nationality" = 'england' AND "Position" = 'df' AND "Crewe Alexandra career" = '1958–1962' AND "Appearances" < '170'
+     
+     
+     
+    SELECT COUNT("Goals") FROM table_8871 WHERE "Nationality" = 'england' AND "Position" = 'df' AND "Crewe Alexandra career" = '1958–1962' AND "Appearances" < '170'
+     
+     
+     
+    SELECT COUNT("Goals") FROM table_8871 WHERE "Nationality" = 'england' AND "Position" = 'df' AND "Crewe Alexandra career" = '1958–1962' AND "Appearances" < '170'
+     
+     
+     
+    SELECT COUNT("Goals") FROM table_
+Reference : SELECT COUNT("Goals") FROM table_8871 WHERE "Nationality" = 'england' AND "Position" = 'df' AND "Crewe Alexandra career" = '1958–1962' AND "Appearances" < '170'
+Match: False
+
+Example 72:
+Input: For those employees who do not work in departments with managers that have ids between 100 and 200, find email and department_id , and visualize them by a bar chart, and order from low to high by the y-axis please.
+Prediction: SELECT EMAIL, DEPARTMENT_ID FROM employees WHERE NOT DEPARTMENT_ID IN (SELECT DEPARTMENT_ID FROM departments WHERE MANAGER_ID BETWEEN 100 AND 200) ORDER BY DEPARTMENT_ID
+Reference : SELECT EMAIL, DEPARTMENT_ID FROM employees WHERE NOT DEPARTMENT_ID IN (SELECT DEPARTMENT_ID FROM departments WHERE MANAGER_ID BETWEEN 100 AND 200) ORDER BY DEPARTMENT_ID
+Match: True
+
+Example 73:
+Input: Who was the opponent in a week less than 8 on October 9, 1960?
+Prediction: SELECT "Opponent" FROM table_43651 WHERE "Week" < '8' AND "Date" = 'october 9, 1960'
+Reference : SELECT "Opponent" FROM table_43651 WHERE "Week" < '8' AND "Date" = 'october 9, 1960'
+Match: True
+
+Example 74:
+Input: how many nations participated ?
+Prediction: SELECT COUNT(DISTINCT "nationality") FROM table_204_29
+Reference : SELECT COUNT(DISTINCT "nationality") FROM table_204_29
+Match: True
+
+Example 75:
+Input: How many households are in highlands county?
+Prediction: SELECT "Number of households" FROM table_39685 WHERE "County" = 'highlands'
+Reference : SELECT AVG("Number of households") FROM table_39685 WHERE "County" = 'highlands'
+Match: False
+
+Example 76:
+Input: what were the five most frequent drugs prescribed to male patients of the 20s in the same month after they had been diagnosed with other lung disease nec, this year?
+Prediction: 
+Reference : SELECT t3.drug FROM (SELECT t2.drug, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS c1 FROM (SELECT admissions.subject_id, diagnoses_icd.charttime FROM diagnoses_icd JOIN admissions ON diagnoses_icd.hadm_id = admissions.hadm_id WHERE diagnoses_icd.icd9_code = (SELECT d_icd_diagnoses.icd9_code FROM d_icd_diagnoses WHERE d_icd_diagnoses.short_title = 'other lung disease nec') AND DATETIME(diagnoses_icd.charttime, 'start of year') = DATETIME(CURRENT_TIME(), 'start of year', '-0 year')) AS t1 JOIN (SELECT admissions.subject_id, prescriptions.drug, prescriptions.startdate FROM prescriptions JOIN admissions ON prescriptions.hadm_id = admissions.hadm_id WHERE admissions.subject_id IN (SELECT patients.subject_id FROM patients WHERE patients.gender = 'm') AND admissions.age BETWEEN 20 AND 29 AND DATETIME(prescriptions.startdate, 'start of year') = DATETIME(CURRENT_TIME(), 'start of year', '-0 year')) AS t2 ON t1.subject_id = t2.subject_id WHERE t1.charttime < t2.startdate AND DATETIME(t1.charttime, 'start of month') = DATETIME(t2.startdate, 'start of month') GROUP BY t2.drug) AS t3 WHERE t3.c1 <= 5
+Match: False
+
+Example 77:
+Input: Who was the player moving to Arminia Bielefeld?
+Prediction: SELECT "Name" FROM table_42328 WHERE "Moving to" = 'arminia bielefeld'
+Reference : SELECT "Name" FROM table_42328 WHERE "Moving to" = 'arminia bielefeld'
+Match: True
+
+Example 78:
+Input: what were the four medicines most frequently prescribed until 2101?
+Prediction: SELECT t1.drug FROM (SELECT prescriptions.drug, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS c1 FROM prescriptions WHERE STRFTIME('%y', prescriptions.startdate) <= '2101' GROUP BY prescriptions.drug) AS t1 WHERE t1.c1 <= 4
+Reference : SELECT t1.drug FROM (SELECT prescriptions.drug, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS c1 FROM prescriptions WHERE STRFTIME('%y', prescriptions.startdate) <= '2101' GROUP BY prescriptions.drug) AS t1 WHERE t1.c1 <= 4
+Match: True
+
+Example 79:
+Input: Report the distinct registration date and the election cycle.
+Prediction: SELECT DISTINCT Registration_Date, Election_Cycle FROM VOTING_RECORD
+Reference : SELECT DISTINCT Registration_Date, Election_Cycle FROM VOTING_RECORD
+Match: True
+
+Example 80:
+Input: what changes have been made to the arterial bp [diastolic] of patient 18877 second measured on the last icu visit compared to the first value measured on the last icu visit?
+Prediction: SELECT (SELECT chartevents.valuenum FROM chartevents WHERE chartevents.icustay_id IN (SELECT icustays.icustay_id FROM icustays WHERE icustays.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 18877) AND NOT icustays.outtime IS NULL ORDER BY icustays.intime DESC LIMIT 1) AND chartevents.itemid IN (SELECT d_items.itemid FROM d_items WHERE d_items.label = 'arterial bp [diastolic]' AND d_items.linksto = 'chartevents') ORDER BY chartevents.charttime LIMIT 1 OFFSET 1) - (SELECT chartevents.valuenum FROM chartevents WHERE chartevents.icustay_id IN (SELECT icustays.icustay_id FROM icustays WHERE icustays.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 18877) AND NOT icustays.outtime IS NULL ORDER BY icustays.intime DESC LIMIT 1) AND chartevents.itemid IN (SELECT d_items.itemid FROM d_items WHERE d_items.label = 'arterial bp [diastolic]' AND d_items.linksto = 'chartevents') ORDER BY chartevents.charttime LIMIT 1
+Reference : SELECT (SELECT chartevents.valuenum FROM chartevents WHERE chartevents.icustay_id IN (SELECT icustays.icustay_id FROM icustays WHERE icustays.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 18877) AND NOT icustays.outtime IS NULL ORDER BY icustays.intime DESC LIMIT 1) AND chartevents.itemid IN (SELECT d_items.itemid FROM d_items WHERE d_items.label = 'arterial bp [diastolic]' AND d_items.linksto = 'chartevents') ORDER BY chartevents.charttime LIMIT 1 OFFSET 1) - (SELECT chartevents.valuenum FROM chartevents WHERE chartevents.icustay_id IN (SELECT icustays.icustay_id FROM icustays WHERE icustays.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 18877) AND NOT icustays.outtime IS NULL ORDER BY icustays.intime DESC LIMIT 1) AND chartevents.itemid IN (SELECT d_items.itemid FROM d_items WHERE d_items.label = 'arterial bp [diastolic]' AND d_items.linksto = 'chartevents') ORDER BY chartevents.charttime LIMIT 1)
+Match: False
+
+Example 81:
+Input: Callsign of 6nan has what purpose?
+Prediction: SELECT purpose FROM table_name_34 WHERE callsign = "6nan"
+Reference : SELECT purpose FROM table_name_34 WHERE callsign = "6nan"
+Match: True
+
+Example 82:
+Input: provide the number of patients whose year of birth is less than 2175 and procedure icd9 code is 9915?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN procedures ON demographic.hadm_id = procedures.hadm_id WHERE demographic.dob_year < "2175" AND procedures.icd9_code = "9915"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN procedures ON demographic.hadm_id = procedures.hadm_id WHERE demographic.dob_year < "2175" AND procedures.icd9_code = "9915"
+Match: True
+
+Example 83:
+Input: how many different parties are listed ?
+Prediction: SELECT COUNT(DISTINCT "party") FROM table_203_354
+Reference : SELECT COUNT(DISTINCT "party") FROM table_203_354
+Match: True
+
+Example 84:
+Input: Show the album names and ids for albums that contain tracks with unit price bigger than 1.
+Prediction: SELECT T1.Title, T1.AlbumId FROM ALBUM AS T1 JOIN TRACK AS T2 ON T1.AlbumId = T2.AlbumId WHERE T2.UnitPrice > 1
+Reference : SELECT T1.Title, T2.AlbumID FROM ALBUM AS T1 JOIN TRACK AS T2 ON T1.AlbumID = T2.AlbumID WHERE T2.UnitPrice > 1 GROUP BY T2.AlbumID
+Match: False
+
+Example 85:
+Input: Which artists have order # 1?
+Prediction: SELECT original_artist FROM table_29756040_1 WHERE order__number = 1
+Reference : SELECT original_artist FROM table_29756040_1 WHERE order__number = "1"
+Match: False
+
+Example 86:
+Input: What opponent has euro '84 qualifying as the type and split as the city?
+Prediction: SELECT opponent FROM table_name_54 WHERE type_of_game = "euro '84 qualifying" AND city = "split"
+Reference : SELECT opponent FROM table_name_54 WHERE type_of_game = "euro '84 qualifying" AND city = "split"
+Match: True
+
+Example 87:
+Input: What is the Team with a Score that is l 79 92 (ot)?
+Prediction: SELECT "Team" FROM table_43321 WHERE "Score" = 'l 79–92 (ot)'
+Reference : SELECT "Team" FROM table_43321 WHERE "Score" = 'l 79–92 (ot)'
+Match: True
+
+Example 88:
+Input: Tags used more than once without a wiki.
+Prediction: 
+Reference : SELECT t.* FROM Tags AS t WHERE t.Count > 1 AND (t.ExcerptPostId IS NULL OR t.WikiPostId IS NULL) ORDER BY t.Count DESC, t.Id DESC
+Match: False
+
+Example 89:
+Input: What is Chris Gatling 's number?
+Prediction: SELECT "No." FROM table_72686 WHERE "Player" = 'Chris Gatling'
+Reference : SELECT MAX("No.") FROM table_72686 WHERE "Player" = 'Chris Gatling'
+Match: False
+
+Example 90:
+Input: If the series is ADAC GT Masters and poles is 1, what is the name of the team?
+Prediction: SELECT "Team" FROM table_25628 WHERE "Series" = 'ADAC GT Masters' AND "Poles" = '1'
+Reference : SELECT "Team" FROM table_25628 WHERE "Poles" = '1' AND "Series" = 'ADAC GT Masters'
+Match: False
+
+Example 91:
+Input: For the upper-level courses , are there any taught by He Jang ?
+Prediction: 
+Reference : SELECT DISTINCT course.department, course.name, course.number FROM course INNER JOIN course_offering ON course.course_id = course_offering.course_id INNER JOIN offering_instructor ON offering_instructor.offering_id = course_offering.offering_id INNER JOIN instructor ON offering_instructor.instructor_id = instructor.instructor_id INNER JOIN program_course ON program_course.course_id = course.course_id WHERE instructor.name LIKE '%He Jang%' AND program_course.category LIKE 'ULCS'
+Match: False
+
+Example 92:
+Input: What is the total number of each ship type? Give me a bar chart, sort by the y axis in desc.
+Prediction: SELECT Type, COUNT(Type) FROM ship GROUP BY Type ORDER BY COUNT(Type) DESC
+Reference : SELECT Type, COUNT(Type) FROM ship GROUP BY Type ORDER BY COUNT(Type) DESC
+Match: True
+
+Example 93:
+Input: On what date did the home team score 11.8 (74)?
+Prediction: SELECT "Date" FROM table_4538 WHERE "Home team score" = '11.8 (74)'
+Reference : SELECT "Date" FROM table_4538 WHERE "Home team score" = '11.8 (74)'
+Match: True
+
+Example 94:
+Input: What are the ids of all students and number of hours played?
+Prediction: SELECT stuid, SUM(hours_played) FROM plays_games GROUP BY stuid
+Reference : SELECT stuid, SUM(hours_played) FROM plays_games GROUP BY stuid
+Match: True
+
+Example 95:
+Input: Which vehicle has a Grid of 13?
+Prediction: SELECT "Constructor" FROM table_57728 WHERE "Grid" = '13'
+Reference : SELECT "Constructor" FROM table_57728 WHERE "Grid" = '13'
+Match: True
+
+Example 96:
+Input: Who was the high scorer in the Toronto game?
+Prediction: SELECT "High points" FROM table_48969 WHERE "Team" = 'toronto'
+Reference : SELECT "High points" FROM table_48969 WHERE "Team" = 'toronto'
+Match: True
+
+Example 97:
+Input: What easy class can I take that will fulfill the ULCS requirement ?
+Prediction: 
+Reference : SELECT DISTINCT course.department, course.name, course.number, program_course.workload, program_course.workload FROM course, program_course WHERE program_course.category LIKE '%ULCS%' AND program_course.course_id = course.course_id AND program_course.workload = (SELECT MIN(PROGRAM_COURSEalias1.workload) FROM program_course AS PROGRAM_COURSEalias1 WHERE PROGRAM_COURSEalias1.category LIKE '%ULCS%')
+Match: False
+
+Example 98:
+Input: Name the Player who has a Place of t7 in Country of united states?
+Prediction: SELECT player FROM table_name_45 WHERE place = "t7" AND country = "united states"
+Reference : SELECT player FROM table_name_45 WHERE place = "t7" AND country = "united states"
+Match: True
+
+Example 99:
+Input: How many points did the Wildcats get when Baylor was an opponent?
+Prediction: SELECT "Wildcats points" FROM table_26933 WHERE "Opponent" = 'Baylor'
+Reference : SELECT "Wildcats points" FROM table_26933 WHERE "Opponent" = 'Baylor'
+Match: True
+
+Example 100:
+Input: What is Ben Hogan's Place?
+Prediction: SELECT "Place" FROM table_49162 WHERE "Player" = 'ben hogan'
+Reference : SELECT "Place" FROM table_49162 WHERE "Player" = 'ben hogan'
+Match: True
+
+Example 101:
+Input: Show the players and years played for players from team 'Columbus Crew'.
+Prediction: SELECT T1.Player, T1.Years_Played FROM player AS T1 JOIN team AS T2 ON T1.Team = T2.Team_id WHERE T2.Name = "Columbus Crew"
+Reference : SELECT T1.Player, T1.Years_Played FROM player AS T1 JOIN team AS T2 ON T1.Team = T2.Team_id WHERE T2.Name = "Columbus Crew"
+Match: True
+
+Example 102:
+Input: what was the four most common procedure for patients of the age 30s since 6 years ago?
+Prediction: SELECT t1.treatmentname FROM (SELECT treatment.treatmentname, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS c1 FROM treatment WHERE treatment.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.age BETWEEN 30 AND 39) AND DATETIME(treatment.treatmenttime) >= DATETIME(CURRENT_TIME(), '-6 year') GROUP BY treatment.treatmentname) AS t1 WHERE t1.c1 <= 4
+Reference : SELECT t1.treatmentname FROM (SELECT treatment.treatmentname, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS c1 FROM treatment WHERE treatment.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.age BETWEEN 30 AND 39) AND DATETIME(treatment.treatmenttime) >= DATETIME(CURRENT_TIME(), '-6 year') GROUP BY treatment.treatmentname) AS t1 WHERE t1.c1 <= 4
+Match: True
+
+Example 103:
+Input: Name the interacting settings for co-operate, plan, take care of, help
+Prediction: 
+Reference : SELECT "Interacting (settings)" FROM table_68448 WHERE "Doing (actions)" = 'co-operate, plan, take care of, help'
+Match: False
+
+Example 104:
+Input: What is the average total for countries with under 3 golds and 0 silvers?
+Prediction: SELECT AVG(total) FROM table_name_83 WHERE gold < 3 AND silver < 0
+Reference : SELECT AVG(total) FROM table_name_83 WHERE gold < 3 AND silver < 0
+Match: True
+
+Example 105:
+Input: which team did liverpool play against ?
+Prediction: 
+Reference : SELECT "against" FROM table_203_637 WHERE "for" = 'liverpool'
+Match: False
+
+Example 106:
+Input: Show the average and maximum damage for all storms with max speed higher than 1000.
+Prediction: SELECT AVG(damage_millions_USD), MAX(damage_millions_USD) FROM storm WHERE max_speed > 1000
+Reference : SELECT AVG(damage_millions_USD), MAX(damage_millions_USD) FROM storm WHERE max_speed > 1000
+Match: True
+
+Example 107:
+Input: What is Position when Player is Drew Barry Category:Articles With hCards?
+Prediction: SELECT "Position" FROM table_8180 WHERE "Player" = 'drew barry category:articles with hcards'
+Reference : SELECT "Position" FROM table_8180 WHERE "Player" = 'drew barry category:articles with hcards'
+Match: True
+
+Example 108:
+Input: What's the record of Game 56?
+Prediction: SELECT "Record" FROM table_46719 WHERE "Game" = '56'
+Reference : SELECT "Record" FROM table_46719 WHERE "Game" = '56'
+Match: True
+
+Example 109:
+Input: Bar chart of the total number from each country
+Prediction: SELECT Country, COUNT(*) FROM climber GROUP BY Country
+Reference : SELECT Country, COUNT(*) FROM climber GROUP BY Country
+Match: True
+
+Example 110:
+Input: How many times is player Stanislas Wawrinka on the list?
+Prediction: SELECT COUNT("Points") FROM table_28435 WHERE "Player" = 'Stanislas Wawrinka'
+Reference : SELECT COUNT("Points defending") FROM table_28435 WHERE "Player" = 'Stanislas Wawrinka'
+Match: False
+
+Example 111:
+Input: What is the lowest overall amount of times they've been in 3rd?
+Prediction: SELECT MIN("3rd") FROM table_26752
+Reference : SELECT MIN("3rd") FROM table_26752
+Match: True
+
+Example 112:
+Input: what are the top three most frequently performed lab tests among the patients 50s since 2100?
+Prediction: 
+Reference : SELECT d_labitems.label FROM d_labitems WHERE d_labitems.itemid IN (SELECT t1.itemid FROM (SELECT labevents.itemid, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS c1 FROM labevents WHERE labevents.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.age BETWEEN 50 AND 59) AND STRFTIME('%y', labevents.charttime) >= '2100' GROUP BY labevents.itemid) AS t1 WHERE t1.c1 <= 3)
+Match: False
+
+Example 113:
+Input: Who directed the episode that was viewed by 2.50 million people in the U.S.?
+Prediction: SELECT directed_by FROM table_11820086_1 WHERE us_viewers__millions_ = "2.50"
+Reference : SELECT directed_by FROM table_11820086_1 WHERE us_viewers__millions_ = "2.50"
+Match: True
+
+Example 114:
+Input: Who directed the episodes that aired December 15, 1956?
+Prediction: SELECT "Director" FROM table_28110 WHERE "Airdate" = 'December 15, 1956'
+Reference : SELECT "Director" FROM table_28110 WHERE "Airdate" = 'December 15, 1956'
+Match: True
+
+Example 115:
+Input: What is the home team score with Away team Richmond?
+Prediction: SELECT home_team AS score FROM table_name_20 WHERE away_team = "richmond"
+Reference : SELECT home_team AS score FROM table_name_20 WHERE away_team = "richmond"
+Match: True
+
+Example 116:
+Input: count the number of patients whose year of birth is less than 2060 and lab test fluid is ascites?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE demographic.dob_year < "2060" AND lab.fluid = "Ascites"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE demographic.dob_year < "2060" AND lab.fluid = "Ascites"
+Match: True
+
+Example 117:
+Input: What's the total of Rank for the County of Galway and has a Total that's larger than 13?
+Prediction: SELECT SUM(rank) FROM table_name_60 WHERE county = "galway" AND total > 13
+Reference : SELECT SUM(rank) FROM table_name_60 WHERE county = "galway" AND total > 13
+Match: True
+
+Example 118:
+Input: What was the score in the venue of Seoul that resulted in 8-0?
+Prediction: SELECT score FROM table_name_32 WHERE venue = "seoul" AND result = "8-0"
+Reference : SELECT score FROM table_name_32 WHERE venue = "seoul" AND result = "8-0"
+Match: True
+
+Example 119:
+Input: Who was the cast on the English (Manga UK) version if K Nishimura acted on the original Japanese?
+Prediction: 
+Reference : SELECT english___manga_uk__ FROM table_2160215_1 WHERE original_japanese = "Kō Nishimura"
+Match: False
+
+Example 120:
+Input: What's listed for the Elevated with a Cardinalatial title of Priest of S. Eusebio and Archbishop of Benevento?
+Prediction: SELECT "Elevated" FROM table_64898 WHERE "Cardinalatial title" = 'priest of s. eusebio and archbishop of benevento'
+Reference : SELECT "Elevated" FROM table_64898 WHERE "Cardinalatial title" = 'priest of s. eusebio and archbishop of benevento'
+Match: True
+
+Example 121:
+Input: What is the verb meaning when part 2 is band?
+Prediction: SELECT verb_meaning FROM table_name_36 WHERE part_2 = "band"
+Reference : SELECT verb_meaning FROM table_name_36 WHERE part_2 = "band"
+Match: True
+
+Example 122:
+Input: Name the year for 15 starts
+Prediction: year = 2008
+    	year = 2009
+    	year = 2010
+    	year = 2011
+    	year = 2012
+    	year = 2013
+    	year = 2014
+    	year = 2015
+    	year = 2016
+    	year = 2017
+    	year = 2018
+    	year = 2019
+    	year = 2020
+    	year = 2021
+    	year = 2022
+    	year = 2023
+    	year = 2024
+    	year = 2025
+    	year = 2026
+    	year = 2027
+    	year = 2028
+    	year = 2029
+    	year = 2030
+    	year = 2031
+    	year = 2032
+    	year = 2033
+    	year = 2034
+    	year = 2035
+    	year = 2036
+    	year = 2037
+    	year = 2038
+    	year = 2039
+Reference : SELECT year FROM table_2308381_2 WHERE starts = 15
+Match: False
+
+Example 123:
+Input: What is the Original Title of the movie directed by Aigars Grauba?
+Prediction: SELECT original_title FROM table_name_36 WHERE director = "aigars grauba"
+Reference : SELECT original_title FROM table_name_36 WHERE director = "aigars grauba"
+Match: True
+
+Example 124:
+Input: What's the 1861 had 1991 in 1881 and a year of year?
+Prediction: SELECT "1861" FROM table_13562 WHERE "1881" = '1991' AND "Year" = 'year'
+Reference : SELECT "1861" FROM table_13562 WHERE "Year" = 'year' AND "1881" = '1991'
+Match: False
+
+Example 125:
+Input: What's the total number of games that had more than 34 points and exactly 3 losses?
+Prediction: SELECT COUNT(games) FROM table_name_73 WHERE points > 34 AND losses = 3
+Reference : SELECT COUNT(games) FROM table_name_73 WHERE points = 34 AND losses = 3
+Match: False
+
+Example 126:
+Input: What is the highest floors with rank greater than 1 in Conrad Dubai?
+Prediction: SELECT MAX("Floors") FROM table_38195 WHERE "Rank" > '1' AND "Name" = 'conrad dubai'
+Reference : SELECT MAX("Floors") FROM table_38195 WHERE "Rank" > '1' AND "Name" = 'conrad dubai'
+Match: True
+
+Example 127:
+Input: What is the report for 10 october?
+Prediction: SELECT "Report" FROM table_56238 WHERE "Date" = '10 october'
+Reference : SELECT "Report" FROM table_56238 WHERE "Date" = '10 october'
+Match: True
+
+Example 128:
+Input: Display a bar chart for what are the hometowns of gymnasts and the corresponding number of gymnasts?, display in descending by the Y-axis.
+Prediction: SELECT Hometown, COUNT(*) FROM gymnast AS T1 JOIN people AS T2 ON T1.Gymnast_ID = T2.People_ID GROUP BY T2.Hometown ORDER BY COUNT(*) DESC
+Reference : SELECT Hometown, COUNT(*) FROM gymnast AS T1 JOIN people AS T2 ON T1.Gymnast_ID = T2.People_ID GROUP BY T2.Hometown ORDER BY COUNT(*) DESC
+Match: True
+
+Example 129:
+Input: What is the Date of the Player from Marshfield High School?
+Prediction: SELECT "DATE" FROM table_63385 WHERE "SCHOOL" = 'marshfield high school'
+Reference : SELECT "DATE" FROM table_63385 WHERE "SCHOOL" = 'marshfield high school'
+Match: True
+
+Example 130:
+Input: What is the Time of the Belarus Player with a Rank larger than 2 and Notes of FB?
+Prediction: SELECT "Time" FROM table_66351 WHERE "Rank" > '2' AND "Notes" = 'fb' AND "Country" = 'belarus'
+Reference : SELECT "Time" FROM table_66351 WHERE "Rank" > '2' AND "Notes" = 'fb' AND "Country" = 'belarus'
+Match: True
+
+Example 131:
+Input: What is the nationality of the player from Buffalo Sabres?
+Prediction: SELECT "Nationality" FROM table_17447 WHERE "NHL team" = 'Buffalo Sabres'
+Reference : SELECT "Nationality" FROM table_17447 WHERE "NHL team" = 'Buffalo Sabres'
+Match: True
+
+Example 132:
+Input: What was the type of surface played on for the week of March 17?
+Prediction: SELECT "Surface" FROM table_45959 WHERE "Week" = 'march 17'
+Reference : SELECT "Surface" FROM table_45959 WHERE "Week" = 'march 17'
+Match: True
+
+Example 133:
+Input: What is the 2 vs 3 when total is bigger than 38?
+Prediction: SELECT SUM(2) AS vs_3 FROM table_name_52 WHERE total > 38
+Reference : SELECT AVG(2 AS _vs_3) FROM table_name_52 WHERE total > 38
+Match: False
+
+Example 134:
+Input: What's team #2 in the round where team $1 is Ilisiakos?
+Prediction: SELECT team__number2 FROM table_19130829_4 WHERE team__number1 = "Ilisiakos"
+Reference : SELECT team__number2 FROM table_19130829_4 WHERE team__number1 = "Ilisiakos"
+Match: True
+
+Example 135:
+Input: Which Drawn has a Position smaller than 8, and a Played smaller than 14?
+Prediction: SELECT SUM("Drawn") FROM table_63795 WHERE "Position" < '8' AND "Played" < '14'
+Reference : SELECT MAX("Drawn") FROM table_63795 WHERE "Position" < '8' AND "Played" < '14'
+Match: False
+
+Example 136:
+Input: how many patients whose marital status is married and procedure long title is transfusion of packed cells?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN procedures ON demographic.hadm_id = procedures.hadm_id WHERE demographic.marital_status = "MARRIED" AND procedures.long_title = "Transfusion of packed cells"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN procedures ON demographic.hadm_id = procedures.hadm_id WHERE demographic.marital_status = "MARRIED" AND procedures.long_title = "Transfusion of packed cells"
+Match: True
+
+Example 137:
+Input: Who won Group VI, when Group 1 was won by deportivo, group IV by sevilla, and group III by Valencia?
+Prediction: SELECT "Group VI" FROM table_33063 WHERE "Group I" = 'deportivo' AND "Group IV" = 'sevilla' AND "Group III" = 'valencia'
+Reference : SELECT "Group VI" FROM table_33063 WHERE "Group I" = 'deportivo' AND "Group IV" = 'sevilla' AND "Group III" = 'valencia'
+Match: True
+
+Example 138:
+Input: Which barony contains a townland with an area 24 acres?
+Prediction: SELECT "Barony" FROM table_4286 WHERE "Area( acres )" = '24'
+Reference : SELECT "Barony" FROM table_4286 WHERE "Area( acres )" = '24'
+Match: True
+
+Example 139:
+Input: what were the four most common drugs that were prescribed to patients during the same month after they were prescribed with heparin (preservative free) during this year?
+Prediction: 
+Reference : SELECT t3.drug FROM (SELECT t2.drug, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS c1 FROM (SELECT admissions.subject_id, prescriptions.startdate FROM prescriptions JOIN admissions ON prescriptions.hadm_id = admissions.hadm_id WHERE prescriptions.drug = 'heparin (preservative free)' AND DATETIME(prescriptions.startdate, 'start of year') = DATETIME(CURRENT_TIME(), 'start of year', '-0 year')) AS t1 JOIN (SELECT admissions.subject_id, prescriptions.drug, prescriptions.startdate FROM prescriptions JOIN admissions ON prescriptions.hadm_id = admissions.hadm_id WHERE DATETIME(prescriptions.startdate, 'start of year') = DATETIME(CURRENT_TIME(), 'start of year', '-0 year')) AS t2 ON t1.subject_id = t2.subject_id WHERE t1.startdate < t2.startdate AND DATETIME(t1.startdate, 'start of month') = DATETIME(t2.startdate, 'start of month') GROUP BY t2.drug) AS t3 WHERE t3.c1 <= 4
+Match: False
+
+Example 140:
+Input: Which Year has a Category of best film?
+Prediction: SELECT "Year" FROM table_58842 WHERE "Category" = 'best film'
+Reference : SELECT MAX("Year") FROM table_58842 WHERE "Category" = 'best film'
+Match: False
+
+Example 141:
+Input: Project Name Pebble: E-Paper Watch for Iphone and Android was ranked how many times?
+Prediction: SELECT COUNT("Rank") FROM table_29348 WHERE "Project name" = 'Pebble: E-Paper Watch for iPhone and Android'
+Reference : SELECT COUNT("Rank") FROM table_29348 WHERE "Project name" = 'Pebble: E-Paper Watch for iPhone and Android'
+Match: True
+
+Example 142:
+Input: What game was developed by Naughty Dog?
+Prediction: SELECT "Game" FROM table_63241 WHERE "Developer(s)" = 'naughty dog'
+Reference : SELECT "Genre" FROM table_63241 WHERE "Developer(s)" = 'naughty dog'
+Match: False
+
+Example 143:
+Input: what 's the number of sample size do they use at the chicago sun times ?
+Prediction: SELECT "sample\nsize" FROM table_204_0 WHERE "poll source" = 'chicago sun-times'
+Reference : SELECT "sample\nsize" FROM table_204_0 WHERE "poll source" = 'chicago sun-times'
+Match: True
+
+Example 144:
+Input: Consulta Registros de Posts - Setembro 2016.
+Prediction: 
+Reference : SELECT Id, PostTypeId, Score, Title, Body, Tags, ViewCount, AnswerCount, CommentCount, FavoriteCount, CreationDate, DeletionDate, ClosedDate FROM Posts WHERE CreationDate BETWEEN '2016-09-30' AND '2016-10-20' AND Tags LIKE '%java%' AND (Tags LIKE '%maven%' OR Tags LIKE '%ant%' OR Tags LIKE '%jenkins%') AND ViewCount > 50 AND AnswerCount > 0
+Match: False
+
+Example 145:
+Input: What is the name of the airport with an IATA of KUF?
+Prediction: SELECT airport FROM table_name_68 WHERE iata = "kuf"
+Reference : SELECT airport FROM table_name_68 WHERE iata = "kuf"
+Match: True
+
+Example 146:
+Input: Prior to 1978, what is the Danish of the Film directed by Bent Christensen?
+Prediction: SELECT "Danish title" FROM table_46106 WHERE "Year" < '1978' AND "Director" = 'bent christensen'
+Reference : SELECT "Danish title" FROM table_46106 WHERE "Year" < '1978' AND "Director" = 'bent christensen'
+Match: True
+
+Example 147:
+Input: when was the last time patient 010-16627 was prescribed acetaminophen 325 mg po tabs and lisinopril 20 mg po tabs since 139 months ago at the same time?
+Prediction: 
+Reference : SELECT t1.drugstarttime FROM (SELECT patient.uniquepid, medication.drugstarttime FROM medication JOIN patient ON medication.patientunitstayid = patient.patientunitstayid WHERE medication.drugname = 'acetaminophen 325 mg po tabs' AND patient.uniquepid = '010-16627' AND DATETIME(medication.drugstarttime) >= DATETIME(CURRENT_TIME(), '-139 month')) AS t1 JOIN (SELECT patient.uniquepid, medication.drugstarttime FROM medication JOIN patient ON medication.patientunitstayid = patient.patientunitstayid WHERE medication.drugname = 'lisinopril 20 mg po tabs' AND patient.uniquepid = '010-16627' AND DATETIME(medication.drugstarttime) >= DATETIME(CURRENT_TIME(), '-139 month')) AS t2 ON t1.uniquepid = t2.uniquepid WHERE DATETIME(t1.drugstarttime) = DATETIME(t2.drugstarttime) ORDER BY t1.drugstarttime DESC LIMIT 1
+Match: False
+
+Example 148:
+Input: what is the total when bronze is more than 1, nation is hong kong (hkg) and gold is less than 3?
+Prediction: SELECT SUM("Total") FROM table_65438 WHERE "Bronze" > '1' AND "Nation" = 'hong kong (hkg)' AND "Gold" < '3'
+Reference : SELECT SUM("Total") FROM table_65438 WHERE "Bronze" > '1' AND "Nation" = 'hong kong (hkg)' AND "Gold" < '3'
+Match: True
+
+Example 149:
+Input: Usually every week , are there 2 or 3 lectures for 417 ?
+Prediction: 
+Reference : SELECT DISTINCT course_offering.friday, course_offering.monday, course_offering.saturday, course_offering.sunday, course_offering.thursday, course_offering.tuesday, course_offering.wednesday, semester.semester, semester.year FROM course, course_offering, semester WHERE course.course_id = course_offering.course_id AND course.department = 'EECS' AND course.number = 417 AND semester.semester_id = course_offering.semester ORDER BY semester.semester_id DESC LIMIT 10
+Match: False
+
+Example 150:
+Input: Name the loss when the record is 76-81
+Prediction: SELECT "Loss" FROM table_70066 WHERE "Record" = '76-81'
+Reference : SELECT "Loss" FROM table_70066 WHERE "Record" = '76-81'
+Match: True
+
+Example 151:
+Input: Game Site of hoosier dome, and a Result of l 7 31 involved what attendance?
+Prediction: SELECT "Attendance" FROM table_34515 WHERE "Game Site" = 'hoosier dome' AND "Result" = 'l 7–31'
+Reference : SELECT "Attendance" FROM table_34515 WHERE "Game Site" = 'hoosier dome' AND "Result" = 'l 7–31'
+Match: True
+
+Example 152:
+Input: Who replaced the manager of team arminia bielefeld?
+Prediction: SELECT replaced_by FROM table_name_44 WHERE team = "arminia bielefeld"
+Reference : SELECT replaced_by FROM table_name_44 WHERE team = "arminia bielefeld"
+Match: True
+
+Example 153:
+Input: what is the number of patients whose marital status is widowed and item id is 51489?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE demographic.marital_status = "WIDOWED" AND lab.itemid = "51489"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE demographic.marital_status = "WIDOWED" AND lab.itemid = "51489"
+Match: True
+
+Example 154:
+Input: For those employees whose salary is in the range of 8000 and 12000 and commission is not null or department number does not equal to 40, give me the comparison about the sum of salary over the job_id , and group by attribute job_id, and show by the y-axis in descending.
+Prediction: 
+Reference : SELECT JOB_ID, SUM(SALARY) FROM employees WHERE SALARY BETWEEN 8000 AND 12000 AND COMMISSION_PCT <> "null" OR DEPARTMENT_ID <> 40 GROUP BY JOB_ID ORDER BY SUM(SALARY) DESC
+Match: False
+
+Example 155:
+Input: Return a bar chart about the distribution of Nationality and the amount of Nationality , and group by attribute Nationality, and order x-axis in ascending order.
+Prediction: SELECT Nationality, COUNT(Nationality) FROM swimmer GROUP BY Nationality ORDER BY Nationality
+Reference : SELECT Nationality, COUNT(Nationality) FROM swimmer GROUP BY Nationality ORDER BY Nationality
+Match: True
+
+Example 156:
+Input: What dates was champion masahiro kawamura at the ibaraki country club tournament?
+Prediction: SELECT dates FROM table_name_6 WHERE tournament_location = "ibaraki country club" AND champion = "masahiro kawamura"
+Reference : SELECT dates FROM table_name_6 WHERE tournament_location = "ibaraki country club" AND champion = "masahiro kawamura"
+Match: True
+
+Example 157:
+Input: What is Result, when Year is 1948, and when Date is November 7?
+Prediction: SELECT "Result" FROM table_8930 WHERE "Year" = '1948' AND "Date" = 'november 7'
+Reference : SELECT "Result" FROM table_8930 WHERE "Year" = '1948' AND "Date" = 'november 7'
+Match: True
+
+Example 158:
+Input: What's the 1949/50 expenditure (in $ millions) in the country where the 1948/49 expenditure was 232$ millions?
+Prediction: SELECT "1949/50 ($ millions)" FROM table_2155 WHERE "1948/49 ($ millions)" = '232'
+Reference : SELECT MAX("1949/50 ($ millions)") FROM table_2155 WHERE "1948/49 ($ millions)" = '232'
+Match: False
+
+Example 159:
+Input: How much are all winners share ($) in the year 2004?
+Prediction: SELECT COUNT("Winners share ($)") FROM table_19999 WHERE "Year" = '2004'
+Reference : SELECT "Winners share ($)" FROM table_19999 WHERE "Year" = '2004'
+Match: False
+
+Example 160:
+Input: Top 1000 questions by tag name.
+Prediction: 
+Reference : SELECT Id AS "post_link", Title, Score, Tags, Body, ViewCount, CreationDate, AnswerCount, AcceptedAnswerId, PostTypeId, ClosedDate FROM Posts AS P WHERE P.Tags LIKE '%##TagName1##%' OR P.Tags LIKE '%##TagName2##%' OR P.Tags LIKE '%##TagName3##%' OR P.Tags LIKE '%##TagName4##%' ORDER BY Score DESC LIMIT 10000
+Match: False
+
+Example 161:
+Input: Name the transfer wind for giuly
+Prediction: SELECT transfer_window FROM table_name_15 WHERE name = "giuly"
+Reference : SELECT transfer_window FROM table_name_15 WHERE name = "giuly"
+Match: True
+
+Example 162:
+Input: how many of the patients with sepsis as primary disease had icd9 code 9960?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id WHERE demographic.diagnosis = "SEPSIS" AND diagnoses.icd9_code = "9960"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN procedures ON demographic.hadm_id = procedures.hadm_id WHERE demographic.diagnosis = "SEPSIS" AND procedures.icd9_code = "9960"
+Match: False
+
+Example 163:
+Input: What's the quarterfinals when the rank was bronze?
+Prediction: SELECT "Quarterfinals" FROM table_13885 WHERE "Rank" = 'bronze'
+Reference : SELECT "Quarterfinals" FROM table_13885 WHERE "Rank" = 'bronze'
+Match: True
+
+Example 164:
+Input: how many patients whose gender is m and lab test name is heparin, lmw?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE demographic.gender = "M" AND lab.label = "Heparin, LMW"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE demographic.gender = "M" AND lab.label = "Heparin, LMW"
+Match: True
+
+Example 165:
+Input: If the parallel bars is 16.150, who is the gymnast?
+Prediction: SELECT gymnast FROM table_18662026_10 WHERE parallel_bars = "16.150"
+Reference : SELECT gymnast FROM table_18662026_10 WHERE parallel_bars = "16.150"
+Match: True
+
+Example 166:
+Input: what was the last drug patient 60347 was prescribed via im in the first hospital visit?
+Prediction: SELECT prescriptions.drug FROM prescriptions WHERE prescriptions.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 60347 AND NOT admissions.dischtime IS NULL ORDER BY admissions.admittime LIMIT 1) AND prescriptions.route = 'im' ORDER BY prescriptions.startdate DESC LIMIT 1
+Reference : SELECT prescriptions.drug FROM prescriptions WHERE prescriptions.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 60347 AND NOT admissions.dischtime IS NULL ORDER BY admissions.admittime LIMIT 1) AND prescriptions.route = 'im' ORDER BY prescriptions.startdate DESC LIMIT 1
+Match: True
+
+Example 167:
+Input: The Loggers are part of what Primary Conference?
+Prediction: SELECT primary_conference FROM table_name_60 WHERE team_nickname = "loggers"
+Reference : SELECT primary_conference FROM table_name_60 WHERE team_nickname = "loggers"
+Match: True
+
+Example 168:
+Input: In which season was there a competition in the Champions League?
+Prediction: SELECT "Season" FROM table_52391 WHERE "Competition" = 'champions league'
+Reference : SELECT "Season" FROM table_52391 WHERE "Competition" = 'champions league'
+Match: True
+
+Example 169:
+Input: count the number of newborn patients who were admitted via emergency hospital room.
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic WHERE demographic.admission_location = "EMERGENCY ROOM ADMIT" AND demographic.admission_type = "NEWBORN"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic WHERE demographic.admission_type = "NEWBORN" AND demographic.admission_location = "EMERGENCY ROOM ADMIT"
+Match: False
+
+Example 170:
+Input: What is arizona state overall lowest?
+Prediction: SELECT MIN(overall) FROM table_name_58 WHERE school_club_team = "arizona state"
+Reference : SELECT MIN(overall) FROM table_name_58 WHERE school_club_team = "arizona state"
+Match: True
+
+Example 171:
+Input: users that have neither a question or answer.
+Prediction: 
+Reference : SELECT COUNT(*) AS no_questions_or_answers FROM Users AS u LEFT JOIN Posts AS p ON u.Id = p.OwnerUserId AND p.PostTypeId IN (1, 2) WHERE p.OwnerUserId IS NULL
+Match: False
+
+Example 172:
+Input: what was the average value of patient 010-29887's bicarbonate?
+Prediction: SELECT AVG(lab.labresult) FROM lab WHERE lab.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.patienthealthsystemstayid IN (SELECT patient.patienthealthsystemstayid FROM patient WHERE patient.uniquepid = '010-29887')) AND lab.labname = 'bicarbonate'
+Reference : SELECT AVG(lab.labresult) FROM lab WHERE lab.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.patienthealthsystemstayid IN (SELECT patient.patienthealthsystemstayid FROM patient WHERE patient.uniquepid = '010-29887')) AND lab.labname = 'bicarbonate'
+Match: True
+
+Example 173:
+Input: What is 's English title?
+Prediction: SELECT english_title FROM table_name_11 WHERE chinese__simplified_ = "我叫刘跃进"
+Reference : SELECT english_title FROM table_name_11 WHERE chinese__simplified_ = "你 朋友"
+Match: False
+
+Example 174:
+Input: Which party won in 2003, that had a swing to gain of less than 2.92 and which resulted in a ld hold?
+Prediction: SELECT winning_party_2003 FROM table_name_26 WHERE swing_to_gain < 2.92 AND result = "ld hold"
+Reference : SELECT winning_party_2003 FROM table_name_26 WHERE swing_to_gain < 2.92 AND result = "ld hold"
+Match: True
+
+Example 175:
+Input: Which % FPv has First Pref votes larger than 19,684, and Seats of 9?
+Prediction: SELECT "% FPv" FROM table_7975 WHERE "First Pref votes" > '19,684' AND "Seats" = '9'
+Reference : SELECT "% FPv" FROM table_7975 WHERE "First Pref votes" > '19,684' AND "Seats" = '9'
+Match: True
+
+Example 176:
+Input: Who is the director when the title is 'believers'?
+Prediction: SELECT "Directed by" FROM table_31326 WHERE "Title" = 'Believers'
+Reference : SELECT "Directed by" FROM table_31326 WHERE "Title" = 'Believers'
+Match: True
+
+Example 177:
+Input: what was the maximum monthly number of patients diagnosed with adv eff insulin/antidiab until 2104?
+Prediction: SELECT MAX(t1.c1) FROM (SELECT COUNT(DISTINCT diagnoses_icd.hadm_id) AS c1 FROM diagnoses_icd WHERE diagnoses_icd.icd9_code = (SELECT d_icd_diagnoses.icd9_code FROM d_icd_diagnoses WHERE d_icd_diagnoses.short_title = 'adv eff insulin/antidiab') AND STRFTIME('%y', diagnoses_icd.charttime) <= '2104' GROUP BY STRFTIME('%y-%m', diagnoses_icd.charttime)) AS t1
+Reference : SELECT MAX(t1.c1) FROM (SELECT COUNT(DISTINCT diagnoses_icd.hadm_id) AS c1 FROM diagnoses_icd WHERE diagnoses_icd.icd9_code = (SELECT d_icd_diagnoses.icd9_code FROM d_icd_diagnoses WHERE d_icd_diagnoses.short_title = 'adv eff insulin/antidiab') AND STRFTIME('%y', diagnoses_icd.charttime) <= '2104' GROUP BY STRFTIME('%y-%m', diagnoses_icd.charttime)) AS t1
+Match: True
+
+Example 178:
+Input: What is the date successor seated where Massachusetts 2nd is the district?
+Prediction: SELECT "Date successor seated" FROM table_73400 WHERE "District" = 'Massachusetts 2nd'
+Reference : SELECT "Date successor seated" FROM table_73400 WHERE "District" = 'Massachusetts 2nd'
+Match: True
+
+Example 179:
+Input: what is discharge location of subject id 24425?
+Prediction: SELECT demographic.discharge_location FROM demographic WHERE demographic.subject_id = "24425"
+Reference : SELECT demographic.discharge_location FROM demographic WHERE demographic.subject_id = "24425"
+Match: True
+
+Example 180:
+Input: What is the to par that has more than $122,591 in Sweden and had Annika S renstam play?
+Prediction: SELECT "To par" FROM table_36068 WHERE "Money ( $ )" > '122,591' AND "Nation" = 'sweden' AND "Player" = 'annika sörenstam'
+Reference : SELECT "To par" FROM table_36068 WHERE "Money ( $ )" > '122,591' AND "Nation" = 'sweden' AND "Player" = 'annika sörenstam'
+Match: True
+
+Example 181:
+Input: name the only candidate that was first elected in 1811 .
+Prediction: 
+Reference : SELECT "incumbent" FROM table_204_109 WHERE "first\nelected" = 1811
+Match: False
+
+Example 182:
+Input: Which Circuit did Johnny Wakefield win?
+Prediction: SELECT circuit FROM table_name_3 WHERE winning_driver = "johnny wakefield"
+Reference : SELECT circuit FROM table_name_3 WHERE winning_driver = "johnny wakefield"
+Match: True
+
+Example 183:
+Input: Which CPU chip(s) is used in the Classic type hardware?
+Prediction: SELECT cpu_chip FROM table_name_71 WHERE type = "classic"
+Reference : SELECT cpu_chip FROM table_name_71 WHERE type = "classic"
+Match: True
+
+Example 184:
+Input: List people who signed up during private beta.
+Prediction: 
+Reference : SELECT u.Id AS "user_link", u.Id, u.CreationDate FROM Users AS u WHERE u.CreationDate < '2011-08-30 00:00:00.00'
+Match: False
+
+Example 185:
+Input: Trend of average score of positively received answers with [tag] by year of creation.
+Prediction: 
+Reference : SELECT YEAR(CreationDate), AVG(Score) FROM Posts WHERE PostTypeId = 2 AND Score >= 0 GROUP BY YEAR(CreationDate)
+Match: False
+
+Example 186:
+Input: What position did tomasz kie bowicz play?
+Prediction: SELECT "Position" FROM table_12694 WHERE "Player" = 'tomasz kiełbowicz'
+Reference : SELECT "Position" FROM table_12694 WHERE "Player" = 'tomasz kiełbowicz'
+Match: True
+
+Example 187:
+Input: how many patients whose diagnoses long title is primary pulmonary hypertension and drug route is ng?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id INNER JOIN prescriptions ON demographic.hadm_id = prescriptions.hadm_id WHERE diagnoses.long_title = "Primary pulmonary hypertension" AND prescriptions.route = "NG"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id INNER JOIN prescriptions ON demographic.hadm_id = prescriptions.hadm_id WHERE diagnoses.long_title = "Primary pulmonary hypertension" AND prescriptions.route = "NG"
+Match: True
+
+Example 188:
+Input: Which Case type has a Cartridge length of 64.77 (2.550)?
+Prediction: SELECT "Case type" FROM table_74706 WHERE "Cartridge length" = '64.77 (2.550)'
+Reference : SELECT "Case type" FROM table_74706 WHERE "Cartridge length" = '64.77 (2.550)'
+Match: True
+
+Example 189:
+Input: For those records from the products and each product's manufacturer, draw a scatter chart about the correlation between manufacturer and code , and group by attribute name.
+Prediction: SELECT T1.Manufacturer, T1.Code FROM Products AS T1 JOIN Manufacturers AS T2 ON T1.Manufacturer = T2.Code GROUP BY Name
+Reference : SELECT T1.Manufacturer, T1.Code FROM Products AS T1 JOIN Manufacturers AS T2 ON T1.Manufacturer = T2.Code GROUP BY Name
+Match: True
+
+Example 190:
+Input: provide the number of patients who had homocysteine lab test and were born before the year 2200.
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE demographic.dob_year < "2200" AND lab.label = "Homocysteine"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE demographic.dob_year < "2200" AND lab.label = "Homocysteine"
+Match: True
+
+Example 191:
+Input: How many matches have a City/Country of karachi, pakistan, and a Year larger than 1996?
+Prediction: SELECT COUNT("Match") FROM table_6282 WHERE "City/Country" = 'karachi, pakistan' AND "Year" > '1996'
+Reference : SELECT COUNT("Match") FROM table_6282 WHERE "City/Country" = 'karachi, pakistan' AND "Year" > '1996'
+Match: True
+
+Example 192:
+Input: list all flights on CO leaving DENVER on monday
+Prediction: SELECT DISTINCT flight.flight_id FROM airport_service, city, date_day, days, flight WHERE ((city.city_code = airport_service.city_code AND city.city_name = 'DENVER' AND days.day_name = 'MONDAY' AND flight.flight_days = days.days_code AND flight.from_airport = airport_service.airport_code) AND flight.airline_code = 'CO') AND date_day.day_number = 21 AND date_day.month_number = 1 AND date_day.year = 1991
+Reference : SELECT DISTINCT flight.flight_id FROM airport_service, city, date_day, days, flight WHERE (city.city_code = airport_service.city_code AND city.city_name = 'DENVER' AND date_day.day_number = 21 AND date_day.month_number = 2 AND date_day.year = 1991 AND days.day_name = date_day.day_name AND flight.flight_days = days.days_code AND flight.from_airport = airport_service.airport_code) AND flight.airline_code = 'CO'
+Match: False
+
+Example 193:
+Input: What is the distance of the Sam's town 250 race?
+Prediction: SELECT distance FROM table_name_24 WHERE race = "sam's town 250"
+Reference : SELECT distance FROM table_name_24 WHERE race = "sam's town 250"
+Match: True
+
+Example 194:
+Input: What was the manner of leaving the team for the manager of Gostaresh Foolad?
+Prediction: SELECT "Manner of departure" FROM table_24908 WHERE "Team" = 'Gostaresh Foolad'
+Reference : SELECT "Manner of departure" FROM table_24908 WHERE "Team" = 'Gostaresh Foolad'
+Match: True
+
+Example 195:
+Input: SELECT Id, Body, Title, Tags FROM posts WHERE Id < 5000.
+Prediction: 
+Reference : SELECT Id, Body, Title, Tags FROM Posts WHERE Id < 5000
+Match: False
+
+Example 196:
+Input: list all UA flights from BOSTON to SAN FRANCISCO
+Prediction: SELECT DISTINCT flight.flight_id FROM airport_service AS AIRPORT_SERVICE_0, airport_service AS AIRPORT_SERVICE_1, city AS CITY_0, city AS CITY_1, flight WHERE (CITY_0.city_code = AIRPORT_SERVICE_0.city_code AND CITY_0.city_name = 'BOSTON' AND CITY_1.city_code = AIRPORT_SERVICE_1.city_code AND CITY_1.city_name = 'SAN FRANCISCO' AND flight.from_airport = AIRPORT_SERVICE_0.airport_code AND flight.to_airport = AIRPORT_SERVICE_1.airport_code) AND flight.airline_code = 'UA'
+Reference : SELECT DISTINCT flight.flight_id FROM airport_service AS AIRPORT_SERVICE_0, airport_service AS AIRPORT_SERVICE_1, city AS CITY_0, city AS CITY_1, flight WHERE (CITY_0.city_code = AIRPORT_SERVICE_0.city_code AND CITY_0.city_name = 'SAN FRANCISCO' AND CITY_1.city_code = AIRPORT_SERVICE_1.city_code AND CITY_1.city_name = 'BOSTON' AND flight.to_airport = AIRPORT_SERVICE_0.airport_code AND flight.from_airport = AIRPORT_SERVICE_1.airport_code) AND flight.airline_code = 'UA'
+Match: False
+
+Example 197:
+Input: what are patient 7524's genders?
+Prediction: 
+Reference : SELECT patients.gender FROM patients WHERE patients.subject_id = 7524
+Match: False
+
+Example 198:
+Input: Please remind me my GPA scale , please ?
+Prediction: 
+Reference : SELECT DISTINCT total_gpa FROM student WHERE student_id = 1
+Match: False
+
+Example 199:
+Input: How many silver medals did the nation who received 32 bronze medals receive?
+Prediction: SELECT silver FROM table_name_61 WHERE bronze = "32"
+Reference : SELECT silver FROM table_name_61 WHERE bronze = 32
+Match: False
+
+Example 200:
+Input: How many students have each different allergy Show bar chart, and sort by the Y-axis in desc.
+Prediction: SELECT Allergy, COUNT(*) FROM Has_Allergy GROUP BY Allergy ORDER BY COUNT(*) DESC
+Reference : SELECT Allergy, COUNT(*) FROM Has_Allergy GROUP BY Allergy ORDER BY COUNT(*) DESC
+Match: True
+
+Example 201:
+Input: What 1972 Hindi film had Ravindra Jain directing the music?
+Prediction: SELECT "Film name" FROM table_12043 WHERE "Language" = 'hindi' AND "Music director" = 'ravindra jain' AND "Year" = '1972'
+Reference : SELECT "Film name" FROM table_12043 WHERE "Year" > '1972' AND "Language" = 'hindi' AND "Lyricist" = 'ravindra jain' AND "Music director" = 'ravindra jain'
+Match: False
+
+Example 202:
+Input: What's the total number of points when the vancouver burrards have fewer than 9 losses and more than 24 games?
+Prediction: SELECT COUNT(points) FROM table_name_18 WHERE losses < 9 AND games > 24 AND team_name = "vancouver burrards"
+     View this table: https://www.kaggle.com/jeanmichelbriant/football-data-2019-20
+Reference : SELECT COUNT(points) FROM table_name_18 WHERE losses < 9 AND games > 24 AND team_name = "vancouver burrards"
+Match: False
+
+Example 203:
+Input: last time patient 033-10145 was diagnosed with seizures - from ischemia/infarction during the previous year?
+Prediction: SELECT diagnosis.diagnosistime FROM diagnosis WHERE diagnosis.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.patienthealthsystemstayid IN (SELECT patient.patienthealthsystemstayid FROM patient WHERE patient.uniquepid = '033-10145')) AND diagnosis.diagnosisname = 'seizures - from ischemia/infarction' AND DATETIME(diagnosis.diagnosistime, 'start of year') = DATETIME(CURRENT_TIME(), 'start of year', '-1 year') ORDER BY diagnosis.diagnosistime DESC LIMIT 1
+Reference : SELECT diagnosis.diagnosistime FROM diagnosis WHERE diagnosis.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.patienthealthsystemstayid IN (SELECT patient.patienthealthsystemstayid FROM patient WHERE patient.uniquepid = '033-10145')) AND diagnosis.diagnosisname = 'seizures - from ischemia/infarction' AND DATETIME(diagnosis.diagnosistime, 'start of year') = DATETIME(CURRENT_TIME(), 'start of year', '-1 year') ORDER BY diagnosis.diagnosistime DESC LIMIT 1
+Match: True
+
+Example 204:
+Input: Average Votes Count based on Comments Count on Question.
+Prediction: 
+Reference : SELECT p.CommentCount, AVG(CAST(p.Score AS FLOAT)) AS AvgScore FROM Posts AS p GROUP BY CommentCount ORDER BY CommentCount
+Match: False
+
+Example 205:
+Input: How many points for Newman/Haas Racing with fewer than 40 laps?
+Prediction: SELECT SUM(points) FROM table_name_6 WHERE team = "newman/haas racing" AND laps < 40
+Reference : SELECT AVG(points) FROM table_name_6 WHERE team = "newman/haas racing" AND laps < 40
+Match: False
+
+Example 206:
+Input: Who played the home team at Windy Hill?
+Prediction: SELECT "Home team" FROM table_54765 WHERE "Venue" = 'windy hill'
+Reference : SELECT "Home team" FROM table_54765 WHERE "Venue" = 'windy hill'
+Match: True
+
+Example 207:
+Input: Which september 26 28, 2011 polling firm had a Link of html, less than 36 liberals, and less than 8 green?
+Prediction: SELECT "Polling Firm" FROM table_35786 WHERE "Link" = 'html' AND "Liberal" < '36' AND "Green" < '8' AND "Date of Polling" = 'september 26–28, 2011'
+Reference : SELECT "Polling Firm" FROM table_35786 WHERE "Link" = 'html' AND "Liberal" < '36' AND "Green" < '8' AND "Date of Polling" = 'september 26–28, 2011'
+Match: True
+
+Example 208:
+Input: How many have Mrs. briar as a villain
+Prediction: SELECT COUNT("#") FROM table_16124 WHERE "Villains" = 'Mrs. Briar'
+Reference : SELECT COUNT("No.") FROM table_16124 WHERE "Villains" = 'Mrs. Briar'
+Match: False
+
+Example 209:
+Input: Which Silver has a Total smaller than 2 and a Rank larger than 8
+Prediction: SELECT SUM(silver) FROM table_name_58 WHERE total < 2 AND rank > 8
+Reference : SELECT MIN(silver) FROM table_name_58 WHERE total < 2 AND rank > 8
+Match: False
+
+Example 210:
+Input: Name the report for philip fotheringham-parker
+Prediction: SELECT "Report" FROM table_78009 WHERE "Winning driver" = 'philip fotheringham-parker'
+Reference : SELECT "Report" FROM table_78009 WHERE "Winning driver" = 'philip fotheringham-parker'
+Match: True
+
+Example 211:
+Input: Which Position has a School/Club Team of illinois?
+Prediction: SELECT "Position" FROM table_7451 WHERE "School/Club Team" = 'illinois'
+Reference : SELECT "Position" FROM table_7451 WHERE "School/Club Team" = 'illinois'
+Match: True
+
+Example 212:
+Input: Site-wide rep gain per answer score.
+Prediction: 
+Reference : SELECT CASE WHEN Score > 50 THEN 50 ELSE Score END AS bucket, SUM(Score * 10 + CASE WHEN AcceptedAnswerId IS NULL THEN 15 ELSE 0 END) AS REP FROM Posts WHERE PostTypeId = 2 AND Score >= 0 GROUP BY CASE WHEN Score > 50 THEN 50 ELSE Score END ORDER BY CASE WHEN Score > 50 THEN 50 ELSE Score END
+Match: False
+
+Example 213:
+Input: For those records from the products and each product's manufacturer, what is the relationship between price and revenue , and group by attribute founder?
+Prediction: 
+Reference : SELECT Price, Revenue FROM Products AS T1 JOIN Manufacturers AS T2 ON T1.Manufacturer = T2.Code GROUP BY Founder
+Match: False
+
+Example 214:
+Input: Return a bar chart on how many movie reviews does each director get?, sort director in descending order.
+Prediction: SELECT director, COUNT(*) FROM Movie AS T1 JOIN Rating AS T2 ON T1.mID = T2.mID GROUP BY T1.director ORDER BY director DESC
+Reference : SELECT director, COUNT(*) FROM Movie AS T1 JOIN Rating AS T2 ON T1.mID = T2.mID GROUP BY T1.director ORDER BY director DESC
+Match: True
+
+Example 215:
+Input: what is patient 035-11731's last heartrate on 11/08/last year?
+Prediction: SELECT vitalperiodic.heartrate FROM vitalperiodic WHERE vitalperiodic.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.patienthealthsystemstayid IN (SELECT patient.patienthealthsystemstayid FROM patient WHERE patient.uniquepid = '035-11731')) AND NOT vitalperiodic.heartrate IS NULL AND DATETIME(vitalperiodic.observationtime, 'start of year') = DATETIME(CURRENT_TIME(), 'start of year', '-1 year') AND STRFTIME('%m-%d', vitalperiodic.observationtime) = '11-08' ORDER BY vitalperiodic.observationtime DESC LIMIT 1
+Reference : SELECT vitalperiodic.heartrate FROM vitalperiodic WHERE vitalperiodic.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.patienthealthsystemstayid IN (SELECT patient.patienthealthsystemstayid FROM patient WHERE patient.uniquepid = '035-11731')) AND NOT vitalperiodic.heartrate IS NULL AND DATETIME(vitalperiodic.observationtime, 'start of year') = DATETIME(CURRENT_TIME(), 'start of year', '-1 year') AND STRFTIME('%m-%d', vitalperiodic.observationtime) = '11-08' ORDER BY vitalperiodic.observationtime DESC LIMIT 1
+Match: True
+
+Example 216:
+Input: For what year is the SAR no. 874?
+Prediction: SELECT "Year" FROM table_31322 WHERE "SAR No." = '874'
+Reference : SELECT "Year" FROM table_31322 WHERE "SAR No." = '874'
+Match: True
+
+Example 217:
+Input: i need a flight from ST. PETERSBURG to MIAMI for thursday
+Prediction: 
+Reference : SELECT DISTINCT flight.flight_id FROM airport_service AS AIRPORT_SERVICE_0, airport_service AS AIRPORT_SERVICE_1, city AS CITY_0, city AS CITY_1, date_day, days, flight WHERE (CITY_1.city_code = AIRPORT_SERVICE_1.city_code AND CITY_1.city_name = 'MIAMI' AND date_day.day_number = 24 AND date_day.month_number = 5 AND date_day.year = 1991 AND days.day_name = date_day.day_name AND flight.flight_days = days.days_code AND flight.to_airport = AIRPORT_SERVICE_1.airport_code) AND CITY_0.city_code = AIRPORT_SERVICE_0.city_code AND CITY_0.city_name = 'ST. PETERSBURG' AND flight.from_airport = AIRPORT_SERVICE_0.airport_code
+Match: False
+
+Example 218:
+Input: Who is the Opponent in the final of the match played on Clay Surface with a Score in the final of 4 6, 3 6?
+Prediction: SELECT "Opponent in the final" FROM table_59149 WHERE "Surface" = 'clay' AND "Score in the final" = '4–6, 3–6'
+Reference : SELECT "Opponent in the final" FROM table_59149 WHERE "Surface" = 'clay' AND "Score in the final" = '4–6, 3–6'
+Match: True
+
+Example 219:
+Input: Provide me the number of patients diagnosed with hypoxemia who had a blood test done.
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE diagnoses.short_title = "Hypoxemia" AND lab.fluid = "Blood"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id INNER JOIN lab ON demographic.hadm_id = lab.hadm_id WHERE diagnoses.long_title = "Hypoxemia" AND lab.fluid = "Blood"
+Match: False
+
+Example 220:
+Input: Show the names and total passengers for all train stations not in London.
+Prediction: SELECT name, total_passengers FROM station WHERE LOCATION <> 'London'
+Reference : SELECT name, total_passengers FROM station WHERE LOCATION <> 'London'
+Match: True
+
+Example 221:
+Input: which season was more successful , 2007-2008 or 2005-2006 ?
+Prediction: 
+Reference : SELECT "season" FROM table_204_636 WHERE "season" IN ('2007-08', '2005-06') ORDER BY "pos." LIMIT 1
+Match: False
+
+Example 222:
+Input: How many of the patients have st-segment elevation myocardial infarction/cardiac cath hadedicle graft nec?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id WHERE demographic.diagnosis = "ST-SEGMENT ELEVATION MYOCARDIAL INFARCTION\CARDIAC CATH; ADELCIDE GRAFT NEC"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN procedures ON demographic.hadm_id = procedures.hadm_id WHERE demographic.diagnosis = "ST-SEGMENT ELEVATION MYOCARDIAL INFARCTION\CARDIAC CATH" AND procedures.short_title = "Attach pedicle graft NEC"
+Match: False
+
+Example 223:
+Input: Nam the total number for bruce coulter award for 9th game
+Prediction: 
+Reference : SELECT COUNT("Bruce Coulter Award") FROM table_25320 WHERE "Game" = '9th'
+Match: False
+
+Example 224:
+Input: A bar chart for what are the number of the names of the workshop groups that have bookings with status code 'stop'?, list bars from low to high order please.
+Prediction: SELECT Store_Name, COUNT(Store_Name) FROM Bookings AS T1 JOIN Drama_Workshop_Groups AS T2 ON T1.Workshop_Group_ID = T2.Workshop_Group_ID WHERE T1.Status_Code = "stop" GROUP BY Store_Name ORDER BY Store_Name
+Reference : SELECT Store_Name, COUNT(Store_Name) FROM Bookings AS T1 JOIN Drama_Workshop_Groups AS T2 ON T1.Workshop_Group_ID = T2.Workshop_Group_ID WHERE T1.Status_Code = "stop" GROUP BY Store_Name ORDER BY Store_Name
+Match: True
+
+Example 225:
+Input: Name the year for donlavey racing bill davis racing
+Prediction: SELECT "Year" FROM table_24630 WHERE "Team(s)" = 'Donlavey Racing Bill Davis Racing'
+Reference : SELECT "Year" FROM table_24630 WHERE "Team(s)" = 'Donlavey Racing Bill Davis Racing'
+Match: True
+
+Example 226:
+Input: How many times is the country ireland and points more than 4?
+Prediction: SELECT COUNT("Jerseys") FROM table_64149 WHERE "Country" = 'ireland' AND "Points" > '4'
+Reference : SELECT COUNT("Vuelta Wins") FROM table_64149 WHERE "Country" = 'ireland' AND "Points" > '4'
+Match: False
+
+Example 227:
+Input: What was the total opponents points for the game were the Oilers scored 21?
+Prediction: SELECT "Opponents" FROM table_72740 WHERE "Oilers points" = '21'
+Reference : SELECT "Opponents" FROM table_72740 WHERE "Oilers points" = '21'
+Match: True
+
+Example 228:
+Input: Result of 1st, and an Extra of 4 x 400 m relay is in what lowest year?
+Prediction: SELECT MIN("Year") FROM table_66724 WHERE "Result" = '1st' AND "Extra" = '4 x 400 m relay'
+Reference : SELECT MIN("Year") FROM table_66724 WHERE "Result" = '1st' AND "Extra" = '4 x 400 m relay'
+Match: True
+
+Example 229:
+Input: what is the total number of times the tournament was pga championship and evens is less than 4?
+Prediction: SELECT COUNT(top_5) FROM table_name_95 WHERE tournament = "pga championship" AND events < 4
+Reference : SELECT COUNT(top_5) FROM table_name_95 WHERE tournament = "pga championship" AND events < 4
+Match: True
+
+Example 230:
+Input: what's the district with party being republican and elected being 1998
+Prediction: SELECT district FROM table_13833770_3 WHERE party = "Republican" AND elected = 1998
+Reference : SELECT district FROM table_13833770_3 WHERE party = "Republican" AND elected = 1998
+Match: True
+
+Example 231:
+Input: Which country had a cad 4011 catalogue #?
+Prediction: SELECT "Country" FROM table_51561 WHERE "Catalogue #" = 'cad 4011'
+Reference : SELECT "Country" FROM table_51561 WHERE "Catalogue #" = 'cad 4011'
+Match: True
+
+Example 232:
+Input: what was the name of the first race ?
+Prediction: SELECT "race title" FROM table_204_508 WHERE id = 1
+Reference : SELECT "race title" FROM table_204_508 ORDER BY "date" LIMIT 1
+Match: False
+
+Example 233:
+Input: okay can you tell me the earliest flight which leaves from PHILADELPHIA to DALLAS
+Prediction: SELECT DISTINCT flight.flight_id FROM airport_service AS AIRPORT_SERVICE_0, airport_service AS AIRPORT_SERVICE_1, city AS CITY_0, city AS CITY_1, flight WHERE (CITY_0.city_code = AIRPORT_SERVICE_0.city_code AND CITY_0.city_name = 'PHILADELPHIA' AND CITY_1.city_code = AIRPORT_SERVICE_1.city_code AND CITY_1.city_name = 'DALLAS' AND flight.from_airport = AIRPORT_SERVICE_0.airport_code AND flight.to_airport = AIRPORT_SERVICE_1.airport_code) AND flight.departure_time = (SELECT MIN(FLIGHTalias1.departure_time) FROM airport_service AS AIRPORT_SERVICEalias2, airport_service AS AIRPORT_SERVICEalias3, city AS CITYalias2, city AS CITYalias3, flight AS FLIGHTalias1 WHERE CITYalias2.city_code = AIRPORT_SERVICEalias2.city_code AND CITYalias2.city_name = 'PHILADELPHIA' AND CITYalias3.city_code = AIRPORT_SERVICEalias3.city_code AND CITYalias3.city_name = 'DALLAS' AND FLIGHTalias1.from_airport = AIRPORT_SERVICEalias2.airport_code AND FLIGHTalias1
+Reference : SELECT DISTINCT flight.flight_id FROM airport_service AS AIRPORT_SERVICE_0, airport_service AS AIRPORT_SERVICE_1, city AS CITY_0, city AS CITY_1, flight WHERE (CITY_0.city_code = AIRPORT_SERVICE_0.city_code AND CITY_0.city_name = 'PHILADELPHIA' AND CITY_1.city_code = AIRPORT_SERVICE_1.city_code AND CITY_1.city_name = 'DALLAS' AND flight.from_airport = AIRPORT_SERVICE_0.airport_code AND flight.to_airport = AIRPORT_SERVICE_1.airport_code) AND flight.departure_time = (SELECT MIN(FLIGHTalias1.departure_time) FROM airport_service AS AIRPORT_SERVICEalias2, airport_service AS AIRPORT_SERVICEalias3, city AS CITYalias2, city AS CITYalias3, flight AS FLIGHTalias1 WHERE CITYalias2.city_code = AIRPORT_SERVICEalias2.city_code AND CITYalias2.city_name = 'PHILADELPHIA' AND CITYalias3.city_code = AIRPORT_SERVICEalias3.city_code AND CITYalias3.city_name = 'DALLAS' AND FLIGHTalias1.from_airport = AIRPORT_SERVICEalias2.airport_code AND FLIGHTalias1.to_airport = AIRPORT_SERVICEalias3.airport_code)
+Match: False
+
+Example 234:
+Input: Who was the star for the Vara network?
+Prediction: SELECT starring FROM table_name_61 WHERE network = "vara"
+Reference : SELECT starring FROM table_name_61 WHERE network = "vara"
+Match: True
+
+Example 235:
+Input: when is the venue nikos goumas stadium and the score is 2 2 4 4 a.e.t. 6 5 pso?
+Prediction: SELECT year FROM table_name_44 WHERE venue = "nikos goumas stadium" AND score = "2–2 4–4 a.e.t. 6–5 pso"
+Reference : SELECT year FROM table_name_44 WHERE venue = "nikos goumas stadium" AND score = "2–2 4–4 a.e.t. 6–5 pso"
+Match: True
+
+Example 236:
+Input: What is the unemployment rate in those places in Alexander county whose status is transitional?
+Prediction: SELECT unemployment_rate FROM table_22815568_7 WHERE status = "Transitional" AND county = "Alexander"
+Reference : SELECT unemployment_rate FROM table_22815568_7 WHERE status = "Transitional" AND county = "Alexander"
+Match: True
+
+Example 237:
+Input: Who held the same position in 2014 that Garion Weller held in 2014?
+Prediction: SELECT "2014" FROM table_7285 WHERE "2011" = 'garion weller'
+Reference : SELECT "2014" FROM table_7285 WHERE "2012" = 'garion weller'
+Match: False
+
+Example 238:
+Input: who was the next consecutive woman to be executed after lynda lyon block ?
+Prediction: 
+Reference : SELECT "name" FROM table_204_867 WHERE "number" = (SELECT "number" FROM table_204_867 WHERE "name" = 'lynda lyon block') + 1
+Match: False
+
+Example 239:
+Input: count the number of patients whose primary disease is morbid obesity/sda and year of death is less than or equal to 2183?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic WHERE demographic.diagnosis = "MORBID OBESITY/SDA" AND demographic.dod_year <= "2183.0"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic WHERE demographic.diagnosis = "MORBID OBESITY/SDA" AND demographic.dod_year <= "2183.0"
+Match: True
+
+Example 240:
+Input: Name the state with an evening gown more than 8.86 and interview less than 8.7 and swimsuit less than 8.96
+Prediction: SELECT state FROM table_name_84 WHERE evening_gown > 8.86 AND swimsuit < 8.96 AND interview < 8.7
+Reference : SELECT state FROM table_name_84 WHERE evening_gown > 8.86 AND swimsuit < 8.96 AND interview < 8.7
+Match: True
+
+Example 241:
+Input: For those employees who did not have any job in the past, give me the comparison about the average of employee_id over the job_id , and group by attribute job_id by a bar chart, display in ascending by the X-axis.
+Prediction: 
+Reference : SELECT JOB_ID, AVG(EMPLOYEE_ID) FROM employees WHERE NOT EMPLOYEE_ID IN (SELECT EMPLOYEE_ID FROM job_history) GROUP BY JOB_ID ORDER BY JOB_ID
+Match: False
+
+Example 242:
+Input: What actor played the 'female, older' role in the original production?
+Prediction: SELECT actor_in_original_production FROM table_17827271_1 WHERE actor_required = "Female, older"
+Reference : SELECT actor_in_original_production FROM table_17827271_1 WHERE actor_required = "Female, older"
+Match: True
+
+Example 243:
+Input: What was the 2012 result associated with a 2007 finish of 2R and a 2009 of 1R?
+Prediction: SELECT 2012 FROM table_name_18 WHERE 2007 = "2r" AND 2009 = "1r"
+Reference : SELECT 2012 FROM table_name_18 WHERE 2007 = "2r" AND 2009 = "1r"
+Match: True
+
+Example 244:
+Input: What was the score on 2010-07-13 when Abby wambach had the assist/pass?
+Prediction: SELECT score FROM table_name_56 WHERE assist_pass = "abby wambach" AND date = "2010-07-13"
+Reference : SELECT score FROM table_name_56 WHERE assist_pass = "abby wambach" AND date = "2010-07-13"
+Match: True
+
+Example 245:
+Input: What Willingshain is Kirchheim 1,126?
+Prediction: SELECT willingshain FROM table_name_71 WHERE kirchheim = "1,126"
+Reference : SELECT willingshain FROM table_name_71 WHERE kirchheim = "1,126"
+Match: True
+
+Example 246:
+Input: Language Trends (# Questions per Tag per Month).
+Prediction: 
+Reference : SELECT DATEADD(mm, (YEAR(Posts.CreationDate) - 1900) * 12 + MONTH(Posts.CreationDate) - 1, 0) AS Month, Tags.TagName, COUNT(*) AS Questions FROM Tags LEFT JOIN PostTags ON PostTags.TagId = Tags.Id LEFT JOIN Posts ON Posts.Id = PostTags.PostId LEFT JOIN PostTypes ON PostTypes.Id = Posts.PostTypeId WHERE Tags.TagName IN ('java', 'python', 'r', 'sas', 'jmp', 'stata', 'spss', 'matlab') AND PostTypes.Name = 'Question' AND Posts.CreationDate < DATEADD(month, DATEDIFF(month, 0, GETDATE()), 0) GROUP BY YEAR(Posts.CreationDate), MONTH(Posts.CreationDate), Tags.TagName ORDER BY YEAR(Posts.CreationDate), MONTH(Posts.CreationDate), Tags.TagName
+Match: False
+
+Example 247:
+Input: Candiates Charles Fisher (DR) 65.1% W. Jones (F) 34.9% had what result?
+Prediction: 
+Reference : SELECT result FROM table_2668336_17 WHERE candidates = "Charles Fisher (DR) 65.1% W. Jones (F) 34.9%"
+Match: False
+
+Example 248:
+Input: Angular vs Ember vs React in Last Month.
+Prediction: 
+Reference : SELECT rate.TagName AS Tag, rate.Month AS Month, rate.Year AS Year, rate.Rate AS NumQuestions FROM (SELECT COUNT(PostId) AS Rate, TagName, YEAR(Posts.CreationDate) AS Year, MONTH(Posts.CreationDate) AS Month FROM Tags, PostTags, Posts WHERE Tags.Id = PostTags.TagId AND Posts.Id = PostId AND Posts.CreationDate > DATEADD(Year, -3, GETDATE()) AND TagName IN ('angularjs', 'ember.js', 'reactjs') GROUP BY TagName, YEAR(Posts.CreationDate), MONTH(Posts.CreationDate)) AS rate ORDER BY rate.TagName, rate.Year DESC, rate.Month DESC
+Match: False
+
+Example 249:
+Input: What is the highest average of the contestant from Texas with an evening gown larger than 8.875?
+Prediction: SELECT MAX(average) FROM table_name_57 WHERE state = "texas" AND evening_gown > 8.875
+Reference : SELECT MAX(average) FROM table_name_57 WHERE state = "texas" AND evening_gown > 8.875
+Match: True
+
+Example 250:
+Input: What is the sum of againsts the team with less than 38 played had?
+Prediction: SELECT SUM("Against") FROM table_38618 WHERE "Played" < '38'
+Reference : SELECT SUM("Against") FROM table_38618 WHERE "Played" < '38'
+Match: True
+
+Example 251:
+Input: how many points apart were the 1st place competitor and the 12th place competitor ?
+Prediction: SELECT ABS((SELECT "result" FROM table_204_910 WHERE "rank" = 1) - (SELECT "result" FROM table_204_910 WHERE "rank" = 12))
+Reference : SELECT (SELECT "result" FROM table_204_910 WHERE id = 1) - (SELECT "result" FROM table_204_910 WHERE id = 12)
+Match: False
+
+Example 252:
+Input: What is the title for the Korean progran on KBS2?
+Prediction: SELECT "Title" FROM table_47993 WHERE "Language" = 'korean' AND "Network" = 'kbs2'
+Reference : SELECT "Title" FROM table_47993 WHERE "Language" = 'korean' AND "Network" = 'kbs2'
+Match: True
+
+Example 253:
+Input: What is the average salary of employees who have a commission percentage that is not null. Show scatter chart.
+Prediction: SELECT SALARY, COMMISSION_PCT FROM employees WHERE COMMISSION_PCT <> "null"
+Reference : SELECT DEPARTMENT_ID, AVG(SALARY) FROM employees WHERE COMMISSION_PCT <> "null" GROUP BY DEPARTMENT_ID
+Match: False
+
+Example 254:
+Input: How many Horizontal Bars have a Team of japan (jpn), and Parallel Bars smaller than 38.924?
+Prediction: SELECT COUNT(horizontal_bar) FROM table_name_68 WHERE team = "japan (jpn)" AND parallel_bars < 38.924
+Reference : SELECT COUNT(horizontal_bar) FROM table_name_68 WHERE team = "japan (jpn)" AND parallel_bars < 38.924
+Match: True
+
+Example 255:
+Input: count the number of patients whose ethnicity is black/haitian and age is less than 63?
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic WHERE demographic.ethnicity = "BLACK/HAITIAN" AND demographic.age < "63"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic WHERE demographic.ethnicity = "BLACK/HAITIAN" AND demographic.age < "63"
+Match: True
+
+Example 256:
+Input: What is the plural if the singular is nyaqot?
+Prediction: SELECT plural FROM table_name_47 WHERE singular = "nyaqot"
+Reference : SELECT plural FROM table_name_47 WHERE singular = "nyaqot"
+Match: True
+
+Example 257:
+Input: For each bed type, find the average room price Show bar chart, and show in desc by the total number.
+Prediction: SELECT bedType, AVG(basePrice) FROM Rooms GROUP BY bedType ORDER BY AVG(basePrice) DESC
+Reference : SELECT bedType, AVG(basePrice) FROM Rooms GROUP BY bedType ORDER BY AVG(basePrice) DESC
+Match: True
+
+Example 258:
+Input: tell me how many married patients have been diagnosed with dysthymic disorder.
+Prediction: SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id WHERE demographic.marital_status = "MARRIED" AND diagnoses.long_title = "Dysthymic disorder"
+Reference : SELECT COUNT(DISTINCT demographic.subject_id) FROM demographic INNER JOIN diagnoses ON demographic.hadm_id = diagnoses.hadm_id WHERE demographic.marital_status = "MARRIED" AND diagnoses.short_title = "Dysthymic disorder"
+Match: False
+
+Example 259:
+Input: What is Language, when Content is Sport, when HDTV is No, and when Television Service is ESPN America?
+Prediction: SELECT language FROM table_name_71 WHERE content = "sport" AND hdtv = "no" AND television_service = "espn america"
+Reference : SELECT language FROM table_name_71 WHERE content = "sport" AND hdtv = "no" AND television_service = "espn america"
+Match: True
+
+Example 260:
+Input: What was the fastest lap for Grand Prix dutch tt?
+Prediction: SELECT fastest_lap FROM table_name_56 WHERE grand_prix = "dutch tt"
+Reference : SELECT fastest_lap FROM table_name_56 WHERE grand_prix = "dutch tt"
+Match: True
+
+Example 261:
+Input: Name the total viewers on fx+ for night on the sun
+Prediction: SELECT "Total viewers on FX+" FROM table_28750 WHERE "Title" = 'Night on the Sun'
+Reference : SELECT "Total viewers on FX+" FROM table_28750 WHERE "Title" = 'Night on the Sun'
+Match: True
+
+Example 262:
+Input: how much weight was patient 25668's last weight?
+Prediction: SELECT chartevents.valuenum FROM chartevents WHERE chartevents.icustay_id IN (SELECT icustays.icustay_id FROM icustays WHERE icustays.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 25668)) AND chartevents.itemid IN (SELECT d_items.itemid FROM d_items WHERE d_items.label = 'admit wt' AND d_items.linksto = 'chartevents') ORDER BY chartevents.charttime DESC LIMIT 1
+Reference : SELECT chartevents.valuenum FROM chartevents WHERE chartevents.icustay_id IN (SELECT icustays.icustay_id FROM icustays WHERE icustays.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 25668)) AND chartevents.itemid IN (SELECT d_items.itemid FROM d_items WHERE d_items.label = 'admit wt' AND d_items.linksto = 'chartevents') ORDER BY chartevents.charttime DESC LIMIT 1
+Match: True
+
+Example 263:
+Input: What's the standard name that has a common name of ADSL Over Pots and ADSL version?
+Prediction: SELECT "Standard name" FROM table_64595 WHERE "Version" = 'adsl' AND "Common name" = 'adsl over pots'
+Reference : SELECT "Standard name" FROM table_64595 WHERE "Version" = 'adsl' AND "Common name" = 'adsl over pots'
+Match: True
+
+Example 264:
+Input: Which player has a total of 8 (24)?
+Prediction: SELECT name FROM table_name_8 WHERE total = "8 (24)"
+Reference : SELECT name FROM table_name_8 WHERE total = "8 (24)"
+Match: True
+
+Example 265:
+Input: What is every value for average on previous season if the competition is league two?
+Prediction: SELECT "+/- ave. on prev. season" FROM table_31304 WHERE "Competition" = 'League Two'
+Reference : SELECT "+/- ave. on prev. season" FROM table_31304 WHERE "Competition" = 'League Two'
+Match: True
+
+Example 266:
+Input: what was the name of the procedure performed to patient 78076, two times since 05/2101?
+Prediction: SELECT d_icd_procedures.short_title FROM d_icd_procedures WHERE d_icd_procedures.icd9_code IN (SELECT t1.icd9_code FROM (SELECT procedures_icd.icd9_code, COUNT(procedures_icd.charttime) AS c1 FROM procedures_icd WHERE procedures_icd.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 78076) AND STRFTIME('%y-%m', procedures_icd.charttime) >= '2101-05' GROUP BY procedures_icd.icd9_code) AS t1 WHERE t1.c1 = 2)
+Reference : SELECT d_icd_procedures.short_title FROM d_icd_procedures WHERE d_icd_procedures.icd9_code IN (SELECT t1.icd9_code FROM (SELECT procedures_icd.icd9_code, COUNT(procedures_icd.charttime) AS c1 FROM procedures_icd WHERE procedures_icd.hadm_id IN (SELECT admissions.hadm_id FROM admissions WHERE admissions.subject_id = 78076) AND STRFTIME('%y-%m', procedures_icd.charttime) >= '2101-05' GROUP BY procedures_icd.icd9_code) AS t1 WHERE t1.c1 = 2)
+Match: True
+
+Example 267:
+Input: How many figures for votes Khuzestan were there when the percentage was 34.50?
+Prediction: SELECT COUNT("Votes Khuzestan") FROM table_22237 WHERE "% of votes Khuzestan" = '34.50'
+Reference : SELECT COUNT("Votes Khuzestan") FROM table_22237 WHERE "% of votes Khuzestan" = '34.50'
+Match: True
+
+Example 268:
+Input: what were the three most commonly given procedures for patients who had previously received a oxygen therapy (> 60%) - face mask within the same month, since 6 years ago?
+Prediction: 
+Reference : SELECT t3.treatmentname FROM (SELECT t2.treatmentname, DENSE_RANK() OVER (ORDER BY COUNT(*) DESC) AS c1 FROM (SELECT patient.uniquepid, treatment.treatmenttime FROM treatment JOIN patient ON treatment.patientunitstayid = patient.patientunitstayid WHERE treatment.treatmentname = 'oxygen therapy (> 60%) - face mask' AND DATETIME(treatment.treatmenttime) >= DATETIME(CURRENT_TIME(), '-6 year')) AS t1 JOIN (SELECT patient.uniquepid, treatment.treatmentname, treatment.treatmenttime FROM treatment JOIN patient ON treatment.patientunitstayid = patient.patientunitstayid WHERE DATETIME(treatment.treatmenttime) >= DATETIME(CURRENT_TIME(), '-6 year')) AS t2 ON t1.uniquepid = t2.uniquepid WHERE t1.treatmenttime < t2.treatmenttime AND DATETIME(t1.treatmenttime, 'start of month') = DATETIME(t2.treatmenttime, 'start of month') GROUP BY t2.treatmentname) AS t3 WHERE t3.c1 <= 3
+Match: False
+
+Example 269:
+Input: calculate the stool output of patient 015-59552 on this month/26.
+Prediction: SELECT SUM(intakeoutput.cellvaluenumeric) FROM intakeoutput WHERE intakeoutput.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.patienthealthsystemstayid IN (SELECT patient.patienthealthsystemstayid FROM patient WHERE patient.uniquepid = '015-59552')) AND intakeoutput.celllabel = 'stool' AND intakeoutput.cellpath LIKE '%output%' AND DATETIME(intakeoutput.intakeoutputtime, 'start of month') = DATETIME(CURRENT_TIME(), 'start of month', '-1 month') AND STRFTIME('%d', intakeoutput.intakeoutputtime) = '26'
+Reference : SELECT SUM(intakeoutput.cellvaluenumeric) FROM intakeoutput WHERE intakeoutput.patientunitstayid IN (SELECT patient.patientunitstayid FROM patient WHERE patient.patienthealthsystemstayid IN (SELECT patient.patienthealthsystemstayid FROM patient WHERE patient.uniquepid = '015-59552')) AND intakeoutput.celllabel = 'stool' AND intakeoutput.cellpath LIKE '%output%' AND DATETIME(intakeoutput.intakeoutputtime, 'start of month') = DATETIME(CURRENT_TIME(), 'start of month', '-0 month') AND STRFTIME('%d', intakeoutput.intakeoutputtime) = '26'
+Match: False
+
+Example 270:
+Input: Who won the mixed doubles in 1998?
+Prediction: SELECT mixed_doubles FROM table_15001572_1 WHERE year = 1998
+Reference : SELECT mixed_doubles FROM table_15001572_1 WHERE year = 1998
+Match: True
+
+Example 271:
+Input: What is the college/junior/club team for player don barber?
+Prediction: SELECT "College/junior/club team" FROM table_3653 WHERE "Player" = 'Don Barber'
+Reference : SELECT "College/junior/club team" FROM table_3653 WHERE "Player" = 'Don Barber'
+Match: True
+
+Example 272:
+Input: What is the average laps for lorenzo bandini with a grid under 3?
+Prediction: SELECT AVG("Laps") FROM table_55089 WHERE "Driver" = 'lorenzo bandini' AND "Grid" < '3'
+Reference : SELECT AVG("Laps") FROM table_55089 WHERE "Driver" = 'lorenzo bandini' AND "Grid" < '3'
+Match: True
+
+Example 273:
+Input: What was the playoff result when they finished 5th, north in the regular sesason?
+Prediction: SELECT "Playoffs" FROM table_1169 WHERE "Regular Season" = '5th, North'
+Reference : SELECT "Playoffs" FROM table_1169 WHERE "Regular Season" = '5th, North'
+Match: True
+
+Example 274:
+Input: Who directed the episode that had 0.57 million U.S. viewers?
+Prediction: SELECT "Directed by" FROM table_3674 WHERE "U.S. viewers (millions)" = '0.57'
+Reference : SELECT "Directed by" FROM table_3674 WHERE "U.S. viewers (millions)" = '0.57'
+Match: True
+
+Example 275:
+Input: How much Area (km 2) has a Common of collegno, and a Population smaller than 50137?
+Prediction: SELECT SUM("Area (km 2 )") FROM table_34147 WHERE "Common of" = 'collegno' AND "Population" < '50137'
+Reference : SELECT COUNT("Area (km 2 )") FROM table_34147 WHERE "Common of" = 'collegno' AND "Population" < '50137'
+Match: False
+
+Example 276:
+Input: i would like information on a flight between WASHINGTON and SAN FRANCISCO with a stopover in DALLAS
+Prediction: 
+Reference : SELECT DISTINCT flight.flight_id FROM airport_service AS AIRPORT_SERVICE_0, airport_service AS AIRPORT_SERVICE_1, airport_service AS AIRPORT_SERVICE_2, city AS CITY_0, city AS CITY_1, city AS CITY_2, flight, flight_stop WHERE (CITY_1.city_code = AIRPORT_SERVICE_1.city_code AND CITY_1.city_name = 'SAN FRANCISCO' AND CITY_2.city_code = AIRPORT_SERVICE_2.city_code AND CITY_2.city_name = 'DALLAS' AND flight_stop.stop_airport = AIRPORT_SERVICE_2.airport_code AND flight.flight_id = flight_stop.flight_id AND flight.to_airport = AIRPORT_SERVICE_1.airport_code) AND CITY_0.city_code = AIRPORT_SERVICE_0.city_code AND CITY_0.city_name = 'WASHINGTON' AND flight.from_airport = AIRPORT_SERVICE_0.airport_code
+Match: False
+
+Example 277:
+Input: Return a bar chart on how many gymnasts are from each hometown?, could you sort by the Y-axis from high to low?
+Prediction: SELECT Hometown, COUNT(*) FROM gymnast AS T1 JOIN people AS T2 ON T1.Gymnast_ID = T2.People_ID GROUP BY T2.Hometown ORDER BY COUNT(*) DESC
+Reference : SELECT Hometown, COUNT(*) FROM gymnast AS T1 JOIN people AS T2 ON T1.Gymnast_ID = T2.People_ID GROUP BY T2.Hometown ORDER BY COUNT(*) DESC
+Match: True
+
+Example 278:
+Input: What is the HDTV for the Rai Nettuno Sat Uno Television service?
+Prediction: SELECT "HDTV" FROM table_76126 WHERE "Television service" = 'rai nettuno sat uno'
+Reference : SELECT "HDTV" FROM table_76126 WHERE "Television service" = 'rai nettuno sat uno'
+Match: True
+
+Example 279:
+Input: What is the location of the Moorabbin Oval stadium?
+Prediction: SELECT "Location" FROM table_4134 WHERE "Stadium" = 'Moorabbin Oval'
+Reference : SELECT "Location" FROM table_4134 WHERE "Stadium" = 'Moorabbin Oval'
+Match: True
+
+Example 280:
+Input: Name the districk for larry mcdonald
+Prediction: SELECT "District" FROM table_72380 WHERE "Incumbent" = 'Larry McDonald'
+Reference : SELECT "District" FROM table_72380 WHERE "Incumbent" = 'Larry McDonald'
+Match: True
+
+Example 281:
+Input: #1: User vs. Num Questions.
+Prediction: 
+Reference : SELECT COUNT(p.Id) AS "Num Questions", u.Id AS "user_link", u.DisplayName, u.Reputation FROM Posts AS p JOIN Users AS u ON p.OwnerUserId = u.Id WHERE p.PostTypeId = 1 AND u.Reputation > 10 GROUP BY u.Id, u.Reputation, u.DisplayName ORDER BY u.Reputation DESC
+Match: False
+
+Example 282:
+Input: What is the venue of teh carfax 250 race?
+Prediction: SELECT "Venue" FROM table_39151 WHERE "Race" = 'carfax 250'
+Reference : SELECT "Venue" FROM table_39151 WHERE "Race" = 'carfax 250'
+Match: True
+
+Example 283:
+Input: Which Hand guards has a Barrel profile of a2 and a Rear sight of weaver?
+Prediction: SELECT hand_guards FROM table_name_1 WHERE barrel_profile = "a2" AND rear_sight = "weaver"
+Reference : SELECT hand_guards FROM table_name_1 WHERE barrel_profile = "a2" AND rear_sight = "weaver"
+Match: True
+
+Example 284:
+Input: What runner-up has 1925 as the year?
+Prediction: SELECT runner_up FROM table_name_6 WHERE year = 1925
+Reference : SELECT runner_up FROM table_name_6 WHERE year = "1925"
+Match: False
+
+Example 285:
+Input: What shows for round when the race was Int. Adac Preis Von Zweibr cken?
+Prediction: SELECT "Round" FROM table_62052 WHERE "Race" = 'int. adac preis von zweibrücken'
+Reference : SELECT "Round" FROM table_62052 WHERE "Race" = 'int. adac preis von zweibrücken'
+Match: True
+
+Example 286:
+Input: What is the date for home team Collingwood?
+Prediction: SELECT date FROM table_name_19 WHERE home_team = "collingwood"
+Reference : SELECT date FROM table_name_19 WHERE home_team = "collingwood"
+Match: True
+
+Example 287:
+Input: List the names of all genres in alphabetical oder, together with its ratings in a bar chart.
+Prediction: SELECT g_name, rating FROM genre ORDER BY g_name
+Reference : SELECT g_name, rating FROM genre ORDER BY g_name
+Match: True
+
+Example 288:
+Input: How many times was Sanger 3730xl $2400 usd?
+Prediction: SELECT COUNT("Sanger 3730xl") FROM table_17774 WHERE "SOLiDv4" = '$2400 USD'
+Reference : SELECT COUNT("Ion Torrent PGM") FROM table_17774 WHERE "Sanger 3730xl" = '$2400 USD'
+Match: False
+
+Example 289:
+Input: what type of school is the institution nicknamed seminoles?
+Prediction: SELECT school_type FROM table_28744929_1 WHERE nickname = "Seminoles"
+Reference : SELECT school_type FROM table_28744929_1 WHERE nickname = "Seminoles"
+Match: True
+
+Example 290:
+Input: What was the venue that featured the Melbourne Tigers as the away team?
+Prediction: SELECT "Venue" FROM table_44267 WHERE "Away team" = 'melbourne tigers'
+Reference : SELECT "Venue" FROM table_44267 WHERE "Away team" = 'melbourne tigers'
+Match: True
+
+Example 291:
+Input: what is the venue when the result is 2nd and extra is 4 x 100 m relay?
+Prediction: SELECT "Venue" FROM table_10302 WHERE "Result" = '2nd' AND "Extra" = '4 x 100 m relay'
+Reference : SELECT "Venue" FROM table_10302 WHERE "Result" = '2nd' AND "Extra" = '4 x 100 m relay'
+Match: True
+
+Example 292:
+Input: until 1 year ago how many patients have received cont inv mec ven <96 hrs within 2 months after the entral infus nutrit sub procedure?
+Prediction: 
+Reference : SELECT COUNT(DISTINCT t1.subject_id) FROM (SELECT admissions.subject_id, procedures_icd.charttime FROM procedures_icd JOIN admissions ON procedures_icd.hadm_id = admissions.hadm_id WHERE procedures_icd.icd9_code = (SELECT d_icd_procedures.icd9_code FROM d_icd_procedures WHERE d_icd_procedures.short_title = 'entral infus nutrit sub') AND DATETIME(procedures_icd.charttime) <= DATETIME(CURRENT_TIME(), '-1 year')) AS t1 JOIN (SELECT admissions.subject_id, procedures_icd.charttime FROM procedures_icd JOIN admissions ON procedures_icd.hadm_id = admissions.hadm_id WHERE procedures_icd.icd9_code = (SELECT d_icd_procedures.icd9_code FROM d_icd_procedures WHERE d_icd_procedures.short_title = 'cont inv mec ven <96 hrs') AND DATETIME(procedures_icd.charttime) <= DATETIME(CURRENT_TIME(), '-1 year')) AS t2 ON t1.subject_id = t2.subject_id WHERE t1.charttime < t2.charttime AND DATETIME(t2.charttime) BETWEEN DATETIME(t1.charttime) AND DATETIME(t1.charttime, '+2 month')
+Match: False
+
+Example 293:
+Input: What player had numbers of 20
+Prediction: SELECT player FROM table_name_67 WHERE no_s_ = "20"
+Reference : SELECT player FROM table_name_67 WHERE no_s_ = "20"
+Match: True
+
+Example 294:
+Input: What was the score for the opponent against Katerina Maleeva in the final?
+Prediction: SELECT "Score" FROM table_49581 WHERE "Opponent in the final" = 'katerina maleeva'
+Reference : SELECT "Score" FROM table_49581 WHERE "Opponent in the final" = 'katerina maleeva'
+Match: True
+
+Example 295:
+Input: What is the lease amount of touchdowns with 1318 yards?
+Prediction: SELECT MIN("Touchdowns") FROM table_36801 WHERE "Yards" = '1318'
+Reference : SELECT MIN("Touchdowns") FROM table_36801 WHERE "Yards" = '1318'
+Match: True
+
+Example 296:
+Input: In which year did Blount County build a bridge in Cleveland that was listed on 1981-08-20?
+Prediction: SELECT "Built" FROM table_49821 WHERE "County" = 'blount' AND "Location" = 'cleveland' AND "Listed" = '1981-08-20'
+Reference : SELECT "Built" FROM table_49821 WHERE "County" = 'blount' AND "Listed" = '1981-08-20' AND "Location" = 'cleveland'
+Match: False
+
+Example 297:
+Input: Which first's surname is Cook?
+Prediction: SELECT "First" FROM table_6137 WHERE "Surname" = 'cook'
+Reference : SELECT "First" FROM table_6137 WHERE "Surname" = 'cook'
+Match: True
+
+Example 298:
+Input: If the population density is 7,447.32, what is the population total number?
+Prediction: SELECT COUNT("Population (2010 Census)") FROM table_25786 WHERE "Pop. density (per km\u00b2)" = '7,447.32'
+Reference : SELECT COUNT("Population (2010 Census)") FROM table_25786 WHERE "Pop. density (per km\u00b2)" = '7,447.32'
+Match: True
+
+Example 299:
+Input: Do the classes for Prof. David Sept always meet on Friday ?
+Prediction: SELECT COUNT(*) = 0 FROM course INNER JOIN course_offering ON course.course_id = course_offering.course_id INNER JOIN offering_instructor ON offering_instructor.offering_id = course_offering.offering_id INNER JOIN instructor ON offering_instructor.instructor_id = instructor.instructor_id WHERE course_offering.friday = 'N' AND instructor.name LIKE '%David Sept%'
+Reference : SELECT COUNT(*) = 0 FROM course INNER JOIN course_offering ON course.course_id = course_offering.course_id INNER JOIN offering_instructor ON offering_instructor.offering_id = course_offering.offering_id INNER JOIN instructor ON offering_instructor.instructor_id = instructor.instructor_id WHERE course_offering.friday = 'N' AND instructor.name LIKE '%David Sept%'
+Match: True
+
+Example 300:
+Input: What's Spain's lane with a heat less than 4?
+Prediction: SELECT SUM("Lane") FROM table_65131 WHERE "Nationality" = 'spain' AND "Heat" < '4'
+Reference : SELECT AVG("Lane") FROM table_65131 WHERE "Nationality" = 'spain' AND "Heat" < '4'
+Match: False
+

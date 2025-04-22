@@ -26,29 +26,25 @@ pass
 if __name__ == '__main__':
     
     #Parametri Modello
-    max_seq_length=2048
+    max_seq_length=8192 #modificato
     dtype=None
     load_in_4bit=True
 
     #Caricamento Dataset
     try:
-        #dataset = load_from_disk("t-sql_dataset_corrected")
-        dataset=load_dataset("json",data_files={"train":"t-sql_dataset_corrected/train.json"})
+        dataset = load_from_disk("merged_dataset_optimized")
         print("Loaded Saved Dataset")
     except:
-        '''
         dataset_tts_train = load_dataset("Clinton/Text-to-sql-v1", split='train[:100%]')
         dataset_tts_train = dataset_tts_train.remove_columns(['source', 'text'])
         dataset_tts_train = dataset_tts_train.rename_columns({'instruction': 'question', 'input': 'context', 'response': 'answer'})
-        
         dataset = DatasetDict({ 'train': interleave_datasets([dataset_tts_train]) })
-        dataset.save_to_disk("merged_dataset_optimized")'
-        '''
-        print("Error loading saved dataset, downloaded loaded new one")
-        
+        dataset.save_to_disk("merged_dataset_optimized")
+        print("Error loading saved dataset, downloaded loaded new one")   
+    
     #Caricamento Modello e Tokenizer
     model,tokenizer=FastLanguageModel.from_pretrained(
-        model_name="unsloth/codellama-7b-bnb-4bit",
+        model_name="unsloth/Meta-Llama-3.1-8B-bnb-4bit",
         max_seq_length=max_seq_length,
         dtype=dtype,
         load_in_4bit=load_in_4bit
@@ -67,38 +63,45 @@ if __name__ == '__main__':
     
     #Template prompt su cui si assembla i prompt finali
     alpaca_prompt="""
-    Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
+    You are a SQL Expert. Given the following database schema, answer the question in natural language and provide the SQL query to retrieve the answer.
     ### Database_schema:
     {}
-    ### Input:
+    ### Question:
     {}
-    ### Response:
+    ### Answer:
     {}
     """
     EOS_TOKEN=tokenizer.eos_token
 
     #Creo lo split test a partire dal dataset completo per usarlo poi in inferenza
-    split_dataset=dataset["train"].train_test_split(test_size=0.1,seed=3407)
-    train_dataset=split_dataset["train"].map(formatting_prompts_func,batched=True,num_proc=1)
-    test_dataset=split_dataset["test"].map(formatting_prompts_func,batched=True,num_proc=1)
-    print(train_dataset[0])
+    split_dataset1=dataset["train"].train_test_split(test_size=0.1,seed=3407)
+    train_dataset_raw = split_dataset1['train']  
+    temp_eval_test   = split_dataset1['test']
+    split_dataset2=temp_eval_test.train_test_split(test_size=0.5,seed=3407)
+    eval_dataset_raw = split_dataset2['train']
+    eval_dataset_raw=eval_dataset_raw.select(range(0,500))
+    test_dataset_raw= split_dataset2['test']
+    train_dataset=train_dataset_raw.map(formatting_prompts_func,batched=True,num_proc=1)
+    eval_dataset=eval_dataset_raw.map(formatting_prompts_func,batched=True,num_proc=1)
+    print(train_dataset[1])
     
     #Inizializzazione Trainier con parametri custum
     trainer=SFTTrainer(
         model=model,
         tokenizer=tokenizer,
         train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
         dataset_text_field="text",
-        dataset_num_proc=4,
+        dataset_num_proc=1,
         max_seq_length=max_seq_length,
         packing=False,
         args=TrainingArguments(
-            num_train_epochs=4,
-            per_device_train_batch_size=2,
+            num_train_epochs=2,
+            per_device_train_batch_size=4,
             gradient_accumulation_steps=4,
             warmup_steps=300,
-            #max_steps=37655,
-            learning_rate=5e-5,
+            #max_steps=,
+            learning_rate=3e-5,
             fp16=not is_bfloat16_supported(),
             bf16=is_bfloat16_supported(),
             logging_steps=50,
@@ -107,9 +110,12 @@ if __name__ == '__main__':
             lr_scheduler_type="cosine",
             seed=3407,
             save_strategy="steps",      
-            save_steps=50,                
+            save_steps=200,                
             save_total_limit=3,
-            output_dir="./output",
+            output_dir="./output3",
+            eval_strategy='steps',
+            eval_steps=5000,
+            per_device_eval_batch_size=2,
             report_to="none",
             
         ),
@@ -117,5 +123,5 @@ if __name__ == '__main__':
         )
 
     #Avvio Training con checkpoint e poi salvataggio modello alla fine
-    trainer_stats=trainer.train()
-    model.save_pretrained_gguf("ggufmodel_llama_3.1_v3",tokenizer,quantization_method="q4_k_m")
+    trainer_stats=trainer.train(resume_from_checkpoint=True)
+    model.save_pretrained_gguf("ggufmodel_llama_4",tokenizer,quantization_method="q4_k_m")
