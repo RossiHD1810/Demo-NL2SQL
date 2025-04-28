@@ -14,8 +14,8 @@ def clean_response(sql_response):
     return sql_response.replace('•', '').strip()
 
 # Percorsi da configurare
-model_path = "ggufmodel_llama_3.1_v3/unsloth.Q4_K_M.gguf"  # Percorso del file GGUF
-dataset_path = "merged_dataset_optimized"  # Path al dataset salvato
+model_path = "ggufmodel_llama_3.1_v3/unsloth.Q4_K_M.gguf"  
+dataset_path = "merged_dataset_optimized"  
 
 #Carico il dataset e creo la stessa partizione di test usata nel training
 try:
@@ -24,9 +24,9 @@ try:
     test_dataset = split_dataset["test"]
     print(f"Test dataset loaded: {len(test_dataset)} samples")
     
-    # Selezione random di n elementi per il test rapido
-    n=300 #Numero sample test
-    random.seed(52)  # Per riproducibilità
+    #
+    n=300 
+    random.seed(52)  
     test_indices = random.sample(range(len(test_dataset)), n)
     test_subset = test_dataset.select(test_indices)
     print(f"N°{n} samples selected for quick testing")
@@ -37,17 +37,17 @@ except Exception as e:
 
 # Carica il modello GGUF
 try:
-    # Utilizza il tokenizer originale per la tokenizzazione
+    
     tokenizer_path = "ggufmodel_llama_3.1_v3"
     if os.path.exists(tokenizer_path):
         tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
         print("Tokenizer loaded")
     else:
-        # Fallback al tokenizer originale
+        
         tokenizer = AutoTokenizer.from_pretrained("unsloth/Meta-Llama-3.1-8B-bnb-4bit")
         print("Tokenizer loaded of the original model")
 
-    # Carica il modello GGUF con llama-cpp-python
+    
     model = Llama(
         model_path=model_path,
         n_ctx=2048,       
@@ -60,15 +60,15 @@ except Exception as e:
     print(f"Error loading GGUF Model: {e}")
     exit(1)
 
-# Formattazione del prompt come nel training
+
 def format_prompt(schema, question):
     prompt = f"""
-    Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
+    You are a SQL Expert. Given the following database schema, answer the question in natural language and provide the SQL query to retrieve the answer.
     ### Database_schema:
     {schema}
-    ### Input:
+    ### Question:
     {question}
-    ### Response:
+    ### Answer:
     """
     return prompt
 

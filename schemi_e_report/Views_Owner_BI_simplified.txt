@@ -1,0 +1,55 @@
+VIEW: [bi].[AUTO_aree] COLUMNS: id_area, codice_area, descr_area, gruppo_area
+
+VIEW: [bi].[AUTO_aziende] COLUMNS: id_azienda, descr_azienda
+
+VIEW: [bi].[AUTO_canali_vendita] COLUMNS: id_canale_vendita, codice_canale_vendita, descr_canale_vendita, gruppo_canale_vendita
+
+VIEW: [bi].[AUTO_clienti] COLUMNS: id_cliente, codice_cliente, descr_cliente, codice_fiscale_cliente, cap_cliente, codice_tipo_cliente, tipo_cliente, gruppo_tipo_cliente, codice_master_cliente
+
+VIEW: [bi].[AUTO_contatti_tipi] COLUMNS: id_tipo_contatto, codice_tipo_contatto, descr_tipo_contatto, gruppo_tipo_contatto
+
+VIEW: [bi].[AUTO_contratti] COLUMNS: id_contratto, id_veicolo, id_contratto_redd, id_area, nr_contratto, id_tipo_contratto, id_provenienza, id_canale_vendita, id_cliente, id_tipo_contatto, segnalatore_contratto, id_sede, id_venditore, dt_apertura_contratto, dt_chiusura_contratto, has_assicurazione_contratto, has_finanziamento_contratto, codice_garanzia_interna_contratto, garanzia_interna_contratto, imp_netto_contratto, imp_netto_finanziato_contratto, imp_netto_listino_contratto, count_permute_contratto, imp_netto_permute_contratto, codice_status_contratto, status_contratto, id_preventivo
+
+VIEW: [bi].[AUTO_contratti_redd] COLUMNS: id_contratto_redd, codice_tipo_costo_ricavo_redd, descr_tipo_costo_ricavo_redd, codice_costo_redd, descr_costo_redd, codice_spesa_redd, descr_spesa_redd, tipo_totale_redd, descr_margine_redd, liv_margine_redd, imp_costo_previsto_redd, imp_costo_previsto_venditore_redd, imp_costo_consuntivo_redd, imp_ricavo_previsto_redd, imp_ricavo_previsto_venditore_redd, imp_ricavo_consuntivo_redd, imp_netto_provvigione_redd, idx_contabile_costo_redd, idx_contabile_spesa_redd, descr_riga_redd, null, cod_costo, null, cod_spesa, codice_spesa_costo_redd
+
+VIEW: [bi].[AUTO_contratti_tipi] COLUMNS: id_tipo_contratto, codice_tipo_contratto, descr_tipo_contratto, gruppo_tipo_contratto
+
+VIEW: [bi].[AUTO_provenienze] COLUMNS: id_provenienza, codice_provenienza, descr_provenienza, gruppo_provenienza
+
+VIEW: [bi].[AUTO_sedi] COLUMNS: id_sede, descr_sede, descr_punto_vendita, gruppo_sede
+
+VIEW: [bi].[AUTO_veicoli] COLUMNS: id_veicolo, id_azienda, id_gesionale_veicolo, telaio_veicolo, targa_veicolo, dt_acquisto_veicolo, dt_immatricolazione_veicolo, dt_arrivo_veicolo, dt_scadenza_bollo, dt_uscita_veicolo, marca_veicolo, gruppo_marca_veicolo, modello_veicolo, versione_veicolo, codice_interno_veicolo, veicolo, tipo_veicolo, gruppo_tipo_veicolo, alimentazione_veicolo, gruppo_alimentazione_veicolo, nuovo_usato_veicolo, destinazione_al_ritiro_veicolo, destinazione_alla_vendita_veicolo, canale_uscita_veicolo, area_commerciale_veicolo, km_percorsi_veicolo, linea_veicolo, provenienza_veicolo, status_veicolo, codice_tipo_ritiro_veicolo, ubicazione_attuale_veicolo, ubicazione_al_ritiro_veicolo, id_contratto_ritiro_veicolo, codice_fornitore_veicolo, note_veicolo
+
+VIEW: [bi].[AUTO_venditori] COLUMNS: id_venditore, codice_venditore, descr_venditore, gruppo_venditori
+
+VIEW: [bi].[CONTT_contatti] COLUMNS: id_azienda, id_contatto, ragione_sociale_contatto, codice_fiscale_contatto, partita_iva_contatto, indirizzo_contatto, cap_contatto, localita_contatto, provincia_contatto, nazione_contatto, email_contatto, telefono_contatto, tipo_soggetto_contatto, sesso_contatto, cognome_contatto, nome_contatto, codice_master_contatto, id_anagrafica_contatto, dt_modifica_contatto
+
+VIEW: [bi].[OFF_accettatori] COLUMNS: id_accettatore, descr_accettatore
+
+VIEW: [bi].[OFF_clienti] COLUMNS: id_cliente_officina, codice_cliente_officina, descr_cliente_officina, gruppo_cliente_officina
+
+VIEW: [bi].[OFF_commesse] COLUMNS: id_commessa, id_azienda, id_tipo_commessa, id_officina, id_cliente_officina, id_gestionale_commessa, nr_commessa, dt_apertura_commessa, dt_chiusura_commessa, dt_previsione_consegna_commessa, dt_inizio_lavoro_commessa, dt_fine_lavoro_commessa, dt_creazione_commessa, dt_effettiva_consegna_commessa, dt_veicolo_pronto_commessa, codice_macro_modello_commessa, descr_macro_modello_commessa, telaio_commessa, id_veicolo_officina, accettatore_commessa, partita_iva_cliente_commessa, segno_riga_commessa, imp_netto_materiale_consumo_commessa, imp_netto_spese_rifiuti_commessa, codice_odl_commessa, codice_estgar_commessa, codice_servicard_commessa
+
+VIEW: [bi].[OFF_commesse_inconvenienti] COLUMNS: id_inconveniente, id_commessa, id_gestionale_inconveniente, id_tipo_intervento, tipo_riga_inconveniente, riga_inconveniente, codice_inconveniente, descr_breve_inconveniente, descr_inconveniente, tipo_inconveniente, codice_carico_inconveniente, tipo_carico_cliente_inconveniente, tipo_carico_garanzia_inconveniente, gruppo_inconveniente
+
+VIEW: [bi].[OFF_commesse_lavorazioni] COLUMNS: id_officina, id_tipo_commessa, id_commessa, id_accettatore, id_inconveniente, descr_riga_lavorazione, progressivo_riga_lavorazione, id_esecutore, id_tipo_intervento, id_tipoesecutore, um_lavorazione, ore_lavorazione, costo_lavorazione, dt_movimento_lavorazione, codice_voce_lavorazione_lavorazione, gruppo_voce_lavorazione, id_voce, ore_fatturate_lavorazione, quota_fatturato_lavorazione, ore_tempario_lavorazione, costo_lavoro_ext_lavorazione, costo_orario_lavorazione
+
+VIEW: [bi].[OFF_commesse_righe] COLUMNS: id_commessa, dt_lavorazione_commessa, nr_inconveniente_commessa, id_inconveniente, nr_riga_commessa, indicatore_tipo_riga_commessa, codice_tipo_commessa, precodice_articolo_commessa, codice_articolo_commessa, codice_lavorazione_commessa, codice_conto_commessa, descr_tipo_esecutore_commessa, gruppo_tipo_esecutore_commessa, id_esecutore, id_tipo_intervento, gruppo_voce_commessa, id_voce, imp_netto_costo_commessa, imp_netto_costo_medio, imp_netto_costo_medio_ponderato_commessa, is_omaggio_commessa, imp_netto_costo_lavori_terzi_commessa, imp_netto_prezzo_listino_commessa, imp_netto_riga_listino_commessa, imp_netto_prezzo_unitario_commessa, qta_commessa, imp_netto_riga_commessa, segno_riga_commessa, tempo_fatt_commessa, qta_tempario_commessa, qta_fatt_ric_commessa, tipo_operazione_commessa, codice_umis_commessa, perc_addebito_cliente_commessa, tipo_carico_garanzia_commessa, tipo_carico_cliente_commessa
+
+VIEW: [bi].[OFF_commesse_tipi] COLUMNS: id_tipo_commessa, codice_tipo_commessa, descr_tipo_commessa, gruppo_tipo_commessa
+
+VIEW: [bi].[OFF_esecutori] COLUMNS: id_esecutore, codice_esecutore, descr_esecutore, qualifica_esecutore, gruppo_esecutore
+
+VIEW: [bi].[OFF_esecutori_tipi] COLUMNS: id_tipo_esecutore, codice_tipo_esecutore, descr_tipo_esecutore, gruppo_tipo_esecutore
+
+VIEW: [bi].[OFF_interventi_tipi] COLUMNS: id_tipo_intervento, codice_tipo_intervento, descr_tipo_intervento, tipo_carico_tipo_intervento, tipo_garanzia_tipo_intervento, tipo_cliente_tipo_intervento
+
+VIEW: [bi].[OFF_noleggi] COLUMNS: id_riga_noleggio, id_azienda, id_contatto, targa_noleggio, telaio_noleggio, modello_alternativo_noleggio, codice_segmento_noleggio, linea_noleggio, dt_ritiro_noleggio, ora_ritiro_noleggio, note_ritiro_noleggio, dt_consegna_noleggio, ora_consegna_noleggio, note_consegna_noleggio, km_ritiro_noleggio, km_consegna_noleggio, km_extra_noleggio, descr_tipo_affidamento_noleggio, idx_contabilizzazione_noleggio, giorni_fatturati_noleggio, giorni_fatturati_prev_noleggio, is_lungo_termine_noleggio, sede_noleggio, id_officina, sede_consegna_noleggio, pagamento_noleggio, costo_carburante_noleggio, costo_veicolo_noleggio, tipo_doc_fatt_noleggio, descr_tipo_doc_fatt_noleggio, dt_doc_noleggio, nr_fatt_noleggio, imp_fatt_noleggio, dt_chiusura_noleggio, nr_commessa_noleggio, tipo_fatturazione_noleggio, id_commessa
+
+VIEW: [bi].[OFF_officine] COLUMNS: id_officina, codice_officina, descr_officina, gruppo_officina
+
+VIEW: [bi].[OFF_presenze] COLUMNS: id_esecutore, id_officina, id_tipo_esecutore, dt_presenza, ore_presenza, ore_teoriche_presenza, ore_nonprod_presenza, ore_straordinarie_presenza, ore_assenza_presenza, ore_ferie_presenza, ore_permessi_presenza, imp_costo_orario_presenza, imp_costo_straordinario_presenza, accettatore_presenza
+
+VIEW: [bi].[OFF_veicoli] COLUMNS: id_veicolo_officina, id_azienda, id_gestionale_veicolo_officina, descr_veicolo_officina, targa_veicolo_officina, codice_tipo_veicolo_officina, codice_marca_veicolo_officina, descr_marca_veicolo_officina, gruppo_marca_veicolo_officina, codice_modello_veicolo_officina, descr_modello_veicolo_officina, codice_veicolo_officina
+
+VIEW: [bi].[OFF_voci] COLUMNS: id_voce, codice_voce, descr_voce, gruppo_voce
