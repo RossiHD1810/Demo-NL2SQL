@@ -1,0 +1,1400 @@
+Modello Valutato: ./output_phase2/checkpoint-6100
+Dataset Valutato: 2_dataset.json (subset di test Fase 2)
+Schema Usato: schemi_e_report/Views_Owner_BI_simplified.txt
+Numero campioni totali nel subset: 154
+Numero errori generazione: 0
+Numero campioni valutati: 154
+
+--- Metriche Medie ---
+Exact Match (EM) / Accuracy: 0.3442 (34.42%)
+ROUGE-L (F1): 0.8555
+BLEU Score: 0.6404
+
+--- Dettaglio Campioni ---
+--- Esempio 1 ---
+Domanda: Mostra la classifica delle marche veicolo (officina) per numero totale di ore di manodopera.
+Predizione:
+WITH LaborHours AS ( SELECT v.targa_veicolo_officina, SUM(l.ore_lavorazione) AS OreTot FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa JOIN [bi].[OFF_veicoli] v ON c.id_veicolo_officina = v.id_veicolo_officina GROUP BY v.targa_veicolo_officina ) SELECT v.descr_marca_veicolo_officina, SUM(OreTot) AS OreTot FROM LaborHours lh JOIN [bi].[OFF_veicoli] v ON lh.targa_veicolo_officina = v.targa_veicolo_officina GROUP BY v.descr_marca_veicolo_officina ORDER BY OreTot DESC;
+
+Riferimento:
+WITH MarcaLabor AS ( SELECT v.descr_marca_veicolo_officina, SUM(l.ore_lavorazione) AS OreTotali FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa JOIN [bi].[OFF_veicoli] v ON c.id_veicolo_officina = v.id_veicolo_officina GROUP BY v.descr_marca_veicolo_officina ) SELECT descr_marca_veicolo_officina, OreTotali, RANK() OVER (ORDER BY OreTotali DESC) AS Ranking FROM MarcaLabor;
+Match (EM): False
+
+--- Esempio 2 ---
+Domanda: Elenca le lavorazioni associate a commesse aperte per più di 60 giorni.
+Predizione:
+SELECT l.id_commessa, l.progressivo_riga_lavorazione FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa WHERE c.dt_chiusura_commessa IS NULL AND DATEDIFF(day, c.dt_apertura_commessa, GETDATE()) > 60;
+
+Riferimento:
+SELECT l.id_commessa, l.progressivo_riga_lavorazione FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_commesse] AS c ON l.id_commessa = c.id_commessa WHERE c.dt_chiusura_commessa IS NULL AND DATEDIFF(day, c.dt_apertura_commessa, GETDATE()) > 60;
+Match (EM): False
+
+--- Esempio 3 ---
+Domanda: Quali livelli di margine hanno un costo consuntivo medio superiore a 1000 euro?
+Predizione:
+SELECT DISTINCT liv_margine_redd, descr_margine_redd FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_consuntivo_redd > 1000 GROUP BY liv_margine_redd, descr_margine_redd;
+    
+Riferimento:
+SELECT liv_margine_redd, descr_margine_redd, AVG(imp_costo_consuntivo_redd) AS CostoMedio FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_consuntivo_redd IS NOT NULL GROUP BY liv_margine_redd, descr_margine_redd HAVING AVG(imp_costo_consuntivo_redd) > 1000;
+Match (EM): False
+
+--- Esempio 4 ---
+Domanda: Mostra il conteggio dei contratti per provenienza (descrizione) e per stato (aperto/chiuso).
+Predizione:
+SELECT p.descr_provenienza, c.status_contratto, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_provenienze] p ON c.id_provenienza = p.id_provenienza GROUP BY p.descr_provenienza, c.status_contratto ORDER BY p.descr_provenienza, c.status_contratto;
+
+Riferimento:
+SELECT p.descr_provenienza, c.status_contratto, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_provenienze] p ON c.id_provenienza = p.id_provenienza GROUP BY p.descr_provenienza, c.status_contratto ORDER BY p.descr_provenienza, c.status_contratto;
+Match (EM): True
+
+--- Esempio 5 ---
+Domanda: Quante ore totali sono state fatturate per commesse completate nell'ultimo trimestre?
+Predizione:
+SELECT SUM(l.ore_fatturate_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_commesse] AS c ON l.id_commessa = c.id_commessa WHERE c.dt_chiusura_commessa >= DATEADD(quarter, -1, GETDATE()) AND c.dt_chiusura_commessa < GETDATE();
+
+Riferimento:
+SELECT SUM(l.ore_fatturate_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_commesse] AS c ON l.id_commessa = c.id_commessa WHERE c.dt_chiusura_commessa >= DATEADD(quarter, -1, GETDATE());
+Match (EM): False
+
+--- Esempio 6 ---
+Domanda: Mostra gli inconvenienti (ID) non associati a nessun tipo di intervento.
+Predizione:
+SELECT id_inconveniente FROM [bi].[OFF_commesse_inconvenienti] WHERE id_tipo_intervento IS NULL OR id_tipo_intervento = 0;
+
+Riferimento:
+SELECT id_inconveniente FROM [bi].[OFF_commesse_inconvenienti] WHERE id_tipo_intervento IS NULL OR id_tipo_intervento = 0;
+Match (EM): True
+
+--- Esempio 7 ---
+Domanda: Quali commesse hanno avuto lavorazioni ma nessun inconveniente segnalato?
+Predizione:
+SELECT DISTINCT c.nr_commessa FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa WHERE c.id_commessa NOT IN (SELECT DISTINCT id_commessa FROM [bi].[OFF_commesse_inconvenienti]);
+
+Riferimento:
+SELECT DISTINCT c.nr_commessa FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa WHERE c.id_commessa NOT IN (SELECT DISTINCT id_commessa FROM [bi].[OFF_commesse_inconvenienti]);
+Match (EM): True
+
+--- Esempio 8 ---
+Domanda: Quali contratti (ID Redd) hanno una spesa descritta come 'Tassa di Registro'?
+Predizione:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] WHERE descr_spesa_redd = 'Tassa di Registro';
+    
+Riferimento:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] WHERE descr_spesa_redd = 'Tassa di Registro';
+Match (EM): True
+
+--- Esempio 9 ---
+Domanda: Qual è la commessa con la più ampia differenza (giorni) tra creazione e apertura?
+Predizione:
+SELECT TOP 1 nr_commessa, DATEDIFF(day, dt_creazione_commessa, dt_apertura_commessa) AS DiffGiorni FROM [bi].[OFF_commesse] WHERE dt_creazione_commessa IS NOT NULL AND dt_apertura_commessa IS NOT NULL ORDER BY DiffGiorni DESC;
+
+Riferimento:
+SELECT TOP 1 nr_commessa, DATEDIFF(day, dt_creazione_commessa, dt_apertura_commessa) AS DiffGiorni FROM [bi].[OFF_commesse] WHERE dt_creazione_commessa IS NOT NULL AND dt_apertura_commessa IS NOT NULL ORDER BY DiffGiorni DESC;
+Match (EM): True
+
+--- Esempio 10 ---
+Domanda: Quante ore totali ha lavorato ogni gruppo di esecutori questo mese?
+Predizione:
+SELECT e.gruppo_esecutore, SUM(p.ore_lavorazione) AS OreTotali FROM [bi].[OFF_presenze] p JOIN [bi].[OFF_commesse_lavorazioni] l ON p.id_esecutore = l.id_esecutore AND p.dt_presenza BETWEEN '##PrimaGiornataMes##' AND '##UltimaGiornataMes##' JOIN [bi].[OFF_esecutori] e ON l.id_esecutore = e.id_esecutore GROUP BY e.gruppo_esecutore;
+
+Riferimento:
+SELECT et.gruppo_tipo_esecutore, SUM(l.ore_lavorazione) AS OreTotali FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_esecutori_tipi] AS et ON l.id_tipo_esecutore = et.id_tipo_esecutore WHERE l.dt_movimento_lavorazione >= DATEADD(month, DATEDIFF(month, 0, GETDATE()), 0) AND l.dt_movimento_lavorazione < DATEADD(month, DATEDIFF(month, 0, GETDATE()) + 1, 0) GROUP BY et.gruppo_tipo_esecutore;
+Match (EM): False
+
+--- Esempio 11 ---
+Domanda: Elenca le lavorazioni associate a inconvenienti senza descrizione breve.
+Predizione:
+SELECT l.id_commessa, l.progressivo_riga_lavorazione FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_commesse_inconvenienti] AS i ON l.id_inconveniente = i.id_inconveniente WHERE i.descr_breve_inconveniente IS NULL OR i.descr_breve_inconveniente = '';
+
+Riferimento:
+SELECT l.id_commessa, l.progressivo_riga_lavorazione FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_commesse_inconvenienti] AS i ON l.id_inconveniente = i.id_inconveniente WHERE i.descr_breve_inconveniente = '-';
+Match (EM): False
+
+--- Esempio 12 ---
+Domanda: Trova i contatti (ID) associati a veicoli in officina ma non a contratti auto.
+Predizione:
+SELECT DISTINCT id_contatto FROM [bi].[OFF_contatti] WHERE id_contatto NOT IN (SELECT DISTINCT id_cliente FROM [bi].[AUTO_contratti]);
+
+Riferimento:
+SELECT DISTINCT oc.id_cliente_officina FROM [bi].[OFF_commesse] oc JOIN [bi].[OFF_clienti] cli ON oc.id_cliente_officina = cli.id_cliente_officina WHERE cli.id_contatto NOT IN (SELECT DISTINCT id_cliente FROM [bi].[AUTO_contratti]);
+Match (EM): False
+
+--- Esempio 13 ---
+Domanda: Qual è il valore totale dei ricambi venduti (non in omaggio) per la commessa 'COM5566'?
+Predizione:
+SELECT SUM(r.imp_netto_riga_commessa) FROM [bi].[OFF_commesse_righe] r JOIN [bi].[OFF_commesse] c ON r.id_commessa = c.id_commessa WHERE c.nr_commessa = 'COM5566' AND r.is_omaggio_commessa = 0 AND r.gruppo_voce_commessa = 13;
+
+Riferimento:
+SELECT SUM(r.imp_netto_riga_commessa) AS ValoreRicambi FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_commesse] AS c ON r.id_commessa = c.id_commessa JOIN [bi].[OFF_voci] AS v ON r.id_voce = v.id_voce WHERE c.nr_commessa = 'COM5566' AND v.gruppo_voce = 'Ricambi' AND r.is_omaggio_commessa = 0; -- Assumendo gruppo_voce 'Ricambi'
+Match (EM): False
+
+--- Esempio 14 ---
+Domanda: Mostra le 3 voci (descrizione) con il maggior costo medio per riga nelle commesse.
+Predizione:
+SELECT TOP 3 v.descr_voce, AVG(r.imp_netto_costo_commessa) AS CostoMedioRiga FROM [bi].[OFF_commesse_righe] r JOIN [bi].[OFF_voci] v ON r.id_voce = v.id_voce WHERE r.imp_netto_costo_commessa IS NOT NULL GROUP BY v.descr_voce ORDER BY CostoMedioRiga DESC;
+
+Riferimento:
+SELECT TOP 3 v.descr_voce, AVG(r.imp_netto_costo_commessa) AS CostoMedio FROM [bi].[OFF_commesse_righe] r JOIN [bi].[OFF_voci] v ON r.id_voce = v.id_voce WHERE r.imp_netto_costo_commessa IS NOT NULL GROUP BY v.descr_voce ORDER BY CostoMedio DESC;
+Match (EM): False
+
+--- Esempio 15 ---
+Domanda: Individua le commesse con codice estensione garanzia 'ESTG01'.
+Predizione:
+SELECT nr_commessa, codice_estgar_commessa FROM [bi].[OFF_commesse] WHERE codice_estgar_commessa = 'ESTG01';
+    
+Riferimento:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE codice_estgar_commessa = 'ESTG01';
+Match (EM): False
+
+--- Esempio 16 ---
+Domanda: Quanti clienti diversi ha seguito ogni accettatore?
+Predizione:
+SELECT accettatore_commessa, COUNT(DISTINCT id_cliente_officina) AS ClientiUnici FROM [bi].[OFF_commesse] GROUP BY accettatore_commessa;
+
+Riferimento:
+SELECT accettatore_commessa, COUNT(DISTINCT id_cliente_officina) AS ClientiUnici FROM [bi].[OFF_commesse] GROUP BY accettatore_commessa;
+Match (EM): True
+
+--- Esempio 17 ---
+Domanda: Qual è il tipo cliente (descrizione) con il maggior numero di contratti aperti?
+Predizione:
+SELECT TOP 1 ct.descr_tipo_cliente, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_clienti] cli ON c.id_cliente = cli.id_cliente JOIN [bi].[AUTO_tipi_clienti] ct ON cli.tipo_cliente = ct.codice_tipo_cliente GROUP BY ct.descr_tipo_cliente ORDER BY NumContratti DESC;
+
+Riferimento:
+SELECT TOP 1 cli.tipo_cliente, COUNT(c.id_contratto) AS NumContrattiAperti FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_clienti] AS cli ON c.id_cliente = cli.id_cliente WHERE c.status_contratto <> 'Chiuso' GROUP BY cli.tipo_cliente ORDER BY NumContrattiAperti DESC;
+Match (EM): False
+
+--- Esempio 18 ---
+Domanda: Mostra i noleggi legati a veicoli con telaio che inizia per 'WBA'.
+Predizione:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE telaio_noleggio LIKE 'WBA%';
+    
+Riferimento:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE telaio_noleggio LIKE 'WBA%';
+Match (EM): True
+
+--- Esempio 19 ---
+Domanda: Mostra i contatti di sesso maschile residenti a 'Genova'.
+Predizione:
+SELECT nome_contatto, cognome_contatto FROM [bi].[CONTT_contatti] WHERE sesso_contatto = 'M' AND provincia_contatto = 'GE';
+    
+Riferimento:
+SELECT nome_contatto, cognome_contatto FROM [bi].[CONTT_contatti] WHERE sesso_contatto = 'M' AND localita_contatto = 'Genova';
+Match (EM): False
+
+--- Esempio 20 ---
+Domanda: Qual è la quantità aggregata di articoli associati alla voce 'Filtro Olio'?
+Predizione:
+SELECT SUM(qta_commessa) FROM [bi].[OFF_commesse_righe] WHERE gruppo_voce_commessa = 11 AND id_voce = 11;
+
+Riferimento:
+SELECT SUM(r.qta_commessa) FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_voci] AS v ON r.id_voce = v.id_voce WHERE v.descr_voce = 'Filtro Olio';
+Match (EM): False
+
+--- Esempio 21 ---
+Domanda: Quali codici area non hanno alcun contratto associato?
+Predizione:
+SELECT codice_area FROM [bi].[AUTO_aree] WHERE id_area NOT IN (SELECT DISTINCT id_area FROM [bi].[AUTO_contratti]);
+
+Riferimento:
+SELECT codice_area FROM [bi].[AUTO_aree] WHERE id_area NOT IN (SELECT DISTINCT id_area FROM [bi].[AUTO_contratti]);
+Match (EM): True
+
+--- Esempio 22 ---
+Domanda: Qual è stato il costo totale per gli straordinari pagati il mese scorso?
+Predizione:
+SELECT SUM(p.ore_straordinarie_presenza * p.imp_costo_straordinario_presenza) FROM [bi].[OFF_presenze] AS p WHERE p.dt_presenza >= DATEADD(month, -1, DATEADD(day, 1-DAY(GETDATE()), GETDATE())) AND p.dt_presenza < DATEADD(day, 1-DAY(GETDATE()), GETDATE());
+
+Riferimento:
+SELECT SUM(p.ore_straordinarie_presenza * p.imp_costo_straordinario_presenza) FROM [bi].[OFF_presenze] AS p WHERE p.dt_presenza >= DATEADD(month, -1, DATEADD(day, 1-DAY(GETDATE()), GETDATE())) AND p.dt_presenza < DATEADD(day, 1-DAY(GETDATE()), GETDATE()) AND p.ore_straordinarie_presenza > 0;
+Match (EM): False
+
+--- Esempio 23 ---
+Domanda: Mostra le commesse per veicoli la cui descrizione include 'Berlina'.
+Predizione:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_veicoli] AS v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE v.descr_veicolo_officina LIKE '%Berlina%';
+
+Riferimento:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_veicoli] AS v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE v.descr_veicolo_officina LIKE '%Berlina%';
+Match (EM): True
+
+--- Esempio 24 ---
+Domanda: Mostra i contatti che hanno lo stesso CAP ma province diverse.
+Predizione:
+SELECT cap_contatto, provincia_contatto, COUNT(DISTINCT id_contatto) AS NumContatti FROM [bi].[CONTT_contatti] WHERE cap_contatto IS NOT NULL GROUP BY cap_contatto, provincia_contatto HAVING COUNT(DISTINCT id_contatto) > 1;
+
+Riferimento:
+SELECT cap_contatto, STRING_AGG(provincia_contatto, ', ') AS Province FROM [bi].[CONTT_contatti] WHERE cap_contatto IS NOT NULL AND provincia_contatto IS NOT NULL GROUP BY cap_contatto HAVING COUNT(DISTINCT provincia_contatto) > 1;
+Match (EM): False
+
+--- Esempio 25 ---
+Domanda: Quante commesse aperte ha ogni accettatore?
+Predizione:
+SELECT accettatore_commessa, COUNT(id_commessa) AS NumCommesseAperte FROM [bi].[OFF_commesse] WHERE dt_chiusura_commessa IS NULL GROUP BY accettatore_commessa;
+
+Riferimento:
+SELECT accettatore_commessa, COUNT(id_commessa) AS CommesseAperte FROM [bi].[OFF_commesse] WHERE dt_chiusura_commessa IS NULL GROUP BY accettatore_commessa;
+Match (EM): False
+
+--- Esempio 26 ---
+Domanda: Quale tipo esecutore ha il minor numero di ore di assenza registrate?
+Predizione:
+SELECT TOP 1 et.descr_tipo_esecutore, SUM(p.ore_assenza_presenza) AS TotAssenze FROM [bi].[OFF_presenze] AS p JOIN [bi].[OFF_esecutori_tipi] AS et ON p.id_tipo_esecutore = et.id_tipo_esecutore GROUP BY et.descr_tipo_esecutore ORDER BY TotAssenze ASC;
+
+Riferimento:
+SELECT TOP 1 et.descr_tipo_esecutore, SUM(p.ore_assenza_presenza) AS TotAssenze FROM [bi].[OFF_presenze] AS p JOIN [bi].[OFF_esecutori_tipi] AS et ON p.id_tipo_esecutore = et.id_tipo_esecutore GROUP BY et.descr_tipo_esecutore ORDER BY TotAssenze ASC;
+Match (EM): True
+
+--- Esempio 27 ---
+Domanda: Qual è l'importo minimo finanziato per un contratto con assicurazione?
+Predizione:
+SELECT MIN(imp_netto_finanziato_contratto) FROM [bi].[AUTO_contratti] WHERE has_assicurazione_contratto = 1 AND has_finanziamento_contratto = 1;
+    
+Riferimento:
+SELECT MIN(imp_netto_finanziato_contratto) FROM [bi].[AUTO_contratti] WHERE has_assicurazione_contratto = 1 AND has_finanziamento_contratto = 1;
+Match (EM): True
+
+--- Esempio 28 ---
+Domanda: Quanti inconvenienti per ogni tipo (codice)?
+Predizione:
+SELECT tipo_inconveniente, COUNT(id_inconveniente) AS NumInconvenienti FROM [bi].[OFF_commesse_inconvenienti] GROUP BY tipo_inconveniente;
+
+Riferimento:
+SELECT codice_inconveniente, COUNT(id_inconveniente) AS NumInconvenienti FROM [bi].[OFF_commesse_inconvenienti] WHERE codice_inconveniente <> '-' GROUP BY codice_inconveniente;
+Match (EM): False
+
+--- Esempio 29 ---
+Domanda: Mostra le commesse per veicoli con codice interno che contiene 'USATO'.
+Predizione:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_veicoli] AS v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE v.codice_veicolo_officina LIKE '%USATO%';
+
+Riferimento:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_veicoli] AS v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE v.codice_veicolo_officina LIKE '%USATO%';
+Match (EM): True
+
+--- Esempio 30 ---
+Domanda: Elenca gli ID Redd dei contratti con un costo previsto superiore a 20000 euro.
+Predizione:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_previsto_redd > 20000;
+
+Riferimento:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_previsto_redd > 20000;
+Match (EM): True
+
+--- Esempio 31 ---
+Domanda: Quanti inconvenienti classificati come 'Elettronico' sono stati registrati?
+Predizione:
+SELECT COUNT(id_inconveniente) FROM [bi].[OFF_commesse_inconvenienti] WHERE tipo_inconveniente = 'Elettronico';
+
+Riferimento:
+SELECT COUNT(id_inconveniente) FROM [bi].[OFF_commesse_inconvenienti] WHERE tipo_inconveniente = 'Elettronico';
+Match (EM): True
+
+--- Esempio 32 ---
+Domanda: Quali aziende hanno almeno un contratto con permuta?
+Predizione:
+SELECT DISTINCT a.descr_azienda FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo JOIN [bi].[AUTO_aziende] AS a ON v.id_azienda = a.id_azienda WHERE c.count_permute_contratto > 0;
+
+Riferimento:
+SELECT DISTINCT a.descr_azienda FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo JOIN [bi].[AUTO_aziende] AS a ON v.id_azienda = a.id_azienda WHERE c.count_permute_contratto > 0;
+Match (EM): True
+
+--- Esempio 33 ---
+Domanda: Mostra i contatti il cui CAP contiene caratteri alfabetici.
+Predizione:
+SELECT id_contatto, cap_contatto FROM [bi].[CONTT_contatti] WHERE cap_contatto LIKE '%[A-Za-z]%' AND cap_contatto IS NOT NULL;
+    
+Riferimento:
+SELECT id_contatto, cap_contatto FROM [bi].[CONTT_contatti] WHERE cap_contatto LIKE '%[a-zA-Z]%'; -- Specifico SQL Server
+Match (EM): False
+
+--- Esempio 34 ---
+Domanda: Mostra le date in cui nessun tecnico ha registrato ore lavorate.
+Predizione:
+SELECT dt_movimento_lavorazione FROM [bi].[OFF_commesse_lavorazioni] GROUP BY dt_movimento_lavorazione HAVING SUM(ore_lavorazione) = 0;
+
+Riferimento:
+SELECT DISTINCT p.dt_presenza FROM [bi].[OFF_presenze] p WHERE p.dt_presenza NOT IN (SELECT DISTINCT CONVERT(date, dt_movimento_lavorazione) FROM [bi].[OFF_commesse_lavorazioni]);
+Match (EM): False
+
+--- Esempio 35 ---
+Domanda: Quali sono i 3 tipi di costo/ricavo con il maggior costo consuntivo totale?
+Predizione:
+SELECT TOP 3 descr_tipo_costo_ricavo_redd, SUM(imp_costo_consuntivo_redd) AS CostoTotale FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_consuntivo_redd IS NOT NULL GROUP BY descr_tipo_costo_ricavo_redd ORDER BY CostoTotale DESC;
+
+Riferimento:
+SELECT TOP 3 descr_tipo_costo_ricavo_redd, SUM(imp_costo_consuntivo_redd) AS CostoTotale FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_consuntivo_redd IS NOT NULL GROUP BY descr_tipo_costo_ricavo_redd ORDER BY CostoTotale DESC;
+Match (EM): True
+
+--- Esempio 36 ---
+Domanda: Elenca le commesse con data fine lavori ma senza data veicolo pronto.
+Predizione:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE dt_fine_lavoro_commessa IS NOT NULL AND dt_veicolo_pronto_commessa IS NULL;
+
+Riferimento:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE dt_fine_lavoro_commessa IS NOT NULL AND dt_veicolo_pronto_commessa IS NULL;
+Match (EM): True
+
+--- Esempio 37 ---
+Domanda: Quali sono le auto (targa) che hanno avuto inconvenienti di tipo 'Garanzia Cliente'?
+Predizione:
+SELECT DISTINCT v.targa_veicolo FROM [bi].[OFF_commesse_inconvenienti] i JOIN [bi].[OFF_commesse] oc ON i.id_commessa = oc.id_commessa JOIN [bi].[OFF_veicoli] v ON oc.id_veicolo_officina = v.id_veicolo_officina WHERE i.tipo_carico_cliente_inconveniente = 'Garanzia Cliente';
+
+Riferimento:
+SELECT DISTINCT c.targa_veicolo FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_commesse_inconvenienti] AS i ON c.id_commessa = i.id_commessa WHERE i.tipo_carico_garanzia_inconveniente = 'Garanzia Cliente';
+Match (EM): False
+
+--- Esempio 38 ---
+Domanda: Trova i contratti chiusi nello stesso mese dell'apertura.
+Predizione:
+SELECT nr_contratto FROM [bi].[AUTO_contratti] WHERE status_contratto = 'Chiuso' AND dt_chiusura_contratto MONTH = dt_apertura_contratto MONTH;
+
+Riferimento:
+SELECT nr_contratto FROM [bi].[AUTO_contratti] WHERE dt_chiusura_contratto IS NOT NULL AND YEAR(dt_apertura_contratto) = YEAR(dt_chiusura_contratto) AND MONTH(dt_apertura_contratto) = MONTH(dt_chiusura_contratto);
+Match (EM): False
+
+--- Esempio 39 ---
+Domanda: Quante commesse sono state aperte per ogni tipo (codice)?
+Predizione:
+SELECT ct.descr_tipo_commessa, COUNT(c.id_commessa) AS NumCommesse FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_commesse_tipi] AS ct ON c.id_tipo_commessa = ct.id_tipo_commessa GROUP BY ct.descr_tipo_commessa;
+
+Riferimento:
+SELECT ct.codice_tipo_commessa, COUNT(c.id_commessa) AS NumeroCommesse FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_commesse_tipi] AS ct ON c.id_tipo_commessa = ct.id_tipo_commessa GROUP BY ct.codice_tipo_commessa;
+Match (EM): False
+
+--- Esempio 40 ---
+Domanda: Trova le commesse relative a veicoli identificati dal codice interno 'V001'.
+Predizione:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_veicoli] AS v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE v.codice_veicolo_officina = 'V001';
+
+Riferimento:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_veicoli] AS v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE v.codice_veicolo_officina = 'V001';
+Match (EM): True
+
+--- Esempio 41 ---
+Domanda: Trova i tecnici (codice esecutore) che hanno registrato ore di presenza ma non ore lavorate nell'ultimo mese.
+Predizione:
+SELECT DISTINCT e.codice_esecutore FROM [bi].[OFF_presenze] p JOIN [bi].[OFF_esecutori] e ON p.id_esecutore = e.id_esecutore WHERE p.dt_presenza >= DATEADD(month, -1, GETDATE()) AND p.ore_presenza > 0 AND (SELECT SUM(p.ore_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa WHERE l.id_esecutore = p.id_esecutore AND c.dt_apertura_commessa >= DATEADD(month, -1, GETDATE())) IS NULL;
+
+Riferimento:
+SELECT DISTINCT p.id_esecutore FROM [bi].[OFF_presenze] p WHERE p.dt_presenza >= DATEADD(month, -1, GETDATE()) AND p.ore_presenza > 0 AND p.id_esecutore NOT IN (SELECT DISTINCT id_esecutore FROM [bi].[OFF_commesse_lavorazioni] WHERE dt_movimento_lavorazione >= DATEADD(month, -1, GETDATE()));
+Match (EM): False
+
+--- Esempio 42 ---
+Domanda: Elenca i contratti (ID Redd) con provvigione esattamente pari a 100 euro.
+Predizione:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] WHERE imp_netto_provvigione_redd = 100;
+    
+Riferimento:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] WHERE imp_netto_provvigione_redd = 100;
+Match (EM): True
+
+--- Esempio 43 ---
+Domanda: Trova le date in cui nessun esecutore era in ferie.
+Predizione:
+SELECT dt_presenza FROM [bi].[OFF_presenze] WHERE ore_ferie_presenza > 0 GROUP BY dt_presenza HAVING SUM(ore_ferie_presenza) = 0;
+
+Riferimento:
+SELECT dt_presenza FROM [bi].[OFF_presenze] GROUP BY dt_presenza HAVING SUM(ore_ferie_presenza) = 0;
+Match (EM): False
+
+--- Esempio 44 ---
+Domanda: Trova le date con il numero massimo di ore di assenza totali registrate.
+Predizione:
+SELECT TOP 1 dt_presenza, SUM(ore_assenza_presenza) AS MaxAssenze FROM [bi].[OFF_presenze] GROUP BY dt_presenza ORDER BY MaxAssenze DESC;
+
+Riferimento:
+SELECT TOP 1 dt_presenza, SUM(ore_assenza_presenza) AS TotaleOreAssenza FROM [bi].[OFF_presenze] GROUP BY dt_presenza ORDER BY TotaleOreAssenza DESC;
+Match (EM): False
+
+--- Esempio 45 ---
+Domanda: Qual è il ricavo consuntivo medio per i contratti con meno di due permute?
+Predizione:
+SELECT AVG(imp_ricavo_consuntivo_redd) FROM [bi].[AUTO_contratti_redd] WHERE id_contratto_redd IN (SELECT id_contratto_redd FROM [bi].[AUTO_contratti] WHERE count_permute_contratto < 2);
+    
+Riferimento:
+SELECT AVG(ISNULL(r.imp_ricavo_consuntivo_redd, 0)) FROM [bi].[AUTO_contratti_redd] r JOIN [bi].[AUTO_contratti] c ON r.id_contratto_redd = c.id_contratto_redd WHERE c.count_permute_contratto < 2;
+Match (EM): False
+
+--- Esempio 46 ---
+Domanda: Mostra le commesse chiuse in cui l'intervallo tra consegna effettiva e chiusura supera 1 giorno.
+Predizione:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE dt_chiusura_commessa IS NOT NULL AND dt_effettiva_consegna_commessa IS NOT NULL AND DATEDIFF(day, dt_effettiva_consegna_commessa, dt_chiusura_commessa) > 1;
+
+Riferimento:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE dt_chiusura_commessa IS NOT NULL AND dt_effettiva_consegna_commessa IS NOT NULL AND DATEDIFF(day, dt_effettiva_consegna_commessa, dt_chiusura_commessa) > 1;
+Match (EM): True
+
+--- Esempio 47 ---
+Domanda: Trova i contratti il cui margine effettivo supera quello previsto dal venditore.
+Predizione:
+SELECT c.nr_contratto FROM [bi].[AUTO_contratti] c JOIN (SELECT id_contratto_redd, SUM(ISNULL(imp_ricavo_consuntivo_redd, 0) - ISNULL(imp_costo_consuntivo_redd, 0)) AS MargineEff, SUM(ISNULL(imp_ricavo_previsto_venditore_redd, 0) - ISNULL(imp_costo_previsto_venditore_redd, 0)) AS MarginePrev FROM [bi].[AUTO_contratti_redd] GROUP BY id_contratto_redd) AS Margine ON c.id_contratto_redd = Margine.id_contratto_redd WHERE Margine.MargineEff > Margine.MarginePrev;
+
+Riferimento:
+WITH Margins AS ( SELECT id_contratto_redd, SUM(ISNULL(imp_ricavo_previsto_venditore_redd, 0) - ISNULL(imp_costo_previsto_venditore_redd, 0)) AS MarginePrevVend, SUM(ISNULL(imp_ricavo_consuntivo_redd, 0) - ISNULL(imp_costo_consuntivo_redd, 0)) AS MargineCons FROM [bi].[AUTO_contratti_redd] GROUP BY id_contratto_redd ) SELECT id_contratto_redd FROM Margins WHERE MargineCons > MarginePrevVend;
+Match (EM): False
+
+--- Esempio 48 ---
+Domanda: Individua le commesse con spese per materiale di consumo nulle o pari a zero.
+Predizione:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE imp_netto_materiale_consumo_commessa = 0;
+
+Riferimento:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE imp_netto_materiale_consumo_commessa IS NULL OR imp_netto_materiale_consumo_commessa = 0;
+Match (EM): False
+
+--- Esempio 49 ---
+Domanda: Che tipo di lavorazioni (descrittivo riga) ha eseguito l'esecutore 'BNCLCU'?
+Predizione:
+SELECT DISTINCT l.descr_riga_lavorazione FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_esecutori] AS e ON l.id_esecutore = e.id_esecutore WHERE e.codice_esecutore = 'BNCLCU';
+
+Riferimento:
+SELECT DISTINCT l.descr_riga_lavorazione FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_esecutori] AS e ON l.id_esecutore = e.id_esecutore WHERE e.codice_esecutore = 'BNCLCU';
+Match (EM): True
+
+--- Esempio 50 ---
+Domanda: Mostra i contratti in cui il segnalatore coincide con il venditore.
+Predizione:
+SELECT nr_contratto, segnalatore_contratto FROM [bi].[AUTO_contratti] WHERE segnalatore_contratto = id_venditore;
+
+Riferimento:
+SELECT c.nr_contratto FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_venditori] AS v ON c.id_venditore = v.id_venditore WHERE c.segnalatore_contratto = v.descr_venditore;
+Match (EM): False
+
+--- Esempio 51 ---
+Domanda: Mostra le righe di commessa con codice conto 'CT100'.
+Predizione:
+SELECT id_commessa, nr_riga_commessa, codice_conto_commessa FROM [bi].[OFF_commesse_righe] WHERE codice_conto_commessa = 'CT100';
+
+Riferimento:
+SELECT id_commessa, nr_riga_commessa FROM [bi].[OFF_commesse_righe] WHERE codice_conto_commessa = 'CT100';
+Match (EM): False
+
+--- Esempio 52 ---
+Domanda: Qual è il valore medio dei contratti per tipo (descrizione)?
+Predizione:
+SELECT ct.descr_tipo_contratto, AVG(c.imp_netto_contratto) AS MediaImporto FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_contratti_tipi] ct ON c.id_tipo_contratto = ct.id_tipo_contratto GROUP BY ct.descr_tipo_contratto;
+
+Riferimento:
+SELECT ct.descr_tipo_contratto, AVG(c.imp_netto_contratto) AS ValoreMedio FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_contratti_tipi] AS ct ON c.id_tipo_contratto = ct.id_tipo_contratto GROUP BY ct.descr_tipo_contratto;
+Match (EM): False
+
+--- Esempio 53 ---
+Domanda: Elenca le commesse in cui la data di fine lavori coincide con la data di chiusura.
+Predizione:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE dt_fine_lavoro_commessa = dt_chiusura_commessa;
+
+Riferimento:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE dt_fine_lavoro_commessa = dt_chiusura_commessa;
+Match (EM): True
+
+--- Esempio 54 ---
+Domanda: Qual è il margine consuntivo medio per contratti aperti nel primo semestre vs secondo semestre?
+Predizione:
+SELECT CASE WHEN dt_apertura_contratto < '2021-06-30' THEN 'Primo Semestre' ELSE 'Secondo Semestre' END AS Semestre, AVG(ISNULL(r.imp_ricavo_consuntivo_redd, 0) - ISNULL(r.imp_costo_consuntivo_redd, 0)) AS MargineMedio FROM [bi].[AUTO_contratti_redd] r JOIN [bi].[AUTO_contratti] c ON r.id_contratto_redd = c.id_contratto_redd GROUP BY CASE WHEN dt_apertura_contratto < '2021-06-30' THEN 'Primo Semestre' ELSE 'Secondo Semestre' END;
+
+Riferimento:
+SELECT CASE WHEN MONTH(c.dt_apertura_contratto) <= 6 THEN 'Primo Semestre' ELSE 'Secondo Semestre' END AS Semestre, AVG(ISNULL(r.imp_ricavo_consuntivo_redd, 0) - ISNULL(r.imp_costo_consuntivo_redd, 0)) AS MargineMedio FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_contratti_redd] r ON c.id_contratto_redd = r.id_contratto_redd GROUP BY CASE WHEN MONTH(c.dt_apertura_contratto) <= 6 THEN 'Primo Semestre' ELSE 'Secondo Semestre' END;
+Match (EM): False
+
+--- Esempio 55 ---
+Domanda: Quali sono le province con più di 1000 contatti registrati?
+Predizione:
+SELECT provincia_contatto, COUNT(id_contatto) AS NumContatti FROM [bi].[CONTT_contatti] GROUP BY provincia_contatto HAVING COUNT(id_contatto) > 1000 ORDER BY NumContatti DESC;
+    
+Riferimento:
+SELECT provincia_contatto, COUNT(*) AS NumeroContatti FROM [bi].[CONTT_contatti] GROUP BY provincia_contatto HAVING COUNT(*) > 1000;
+Match (EM): False
+
+--- Esempio 56 ---
+Domanda: Mostra i livelli di margine associati a tipi di costo/ricavo con 'IVA' nella descrizione.
+Predizione:
+SELECT DISTINCT liv_margine_redd, descr_margine_redd FROM [bi].[AUTO_contratti_redd] WHERE descr_costo_redd LIKE '%IVA%' OR descr_spesa_redd LIKE '%IVA%';
+
+Riferimento:
+SELECT DISTINCT liv_margine_redd, descr_margine_redd FROM [bi].[AUTO_contratti_redd] WHERE descr_tipo_costo_ricavo_redd LIKE '%IVA%';
+Match (EM): False
+
+--- Esempio 57 ---
+Domanda: Trova gli ID Redd dei contratti associati a costi il cui codice inizia con 'INT'.
+Predizione:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] WHERE codice_costo_redd LIKE 'INT%';
+    
+Riferimento:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] WHERE codice_costo_redd LIKE 'INT%';
+Match (EM): True
+
+--- Esempio 58 ---
+Domanda: Quanti contatti sono registrati per ciascuna nazione?
+Predizione:
+SELECT nazione_contatto, COUNT(id_contatto) AS NumeroContatti FROM [bi].[CONTT_contatti] GROUP BY nazione_contatto ORDER BY NumeroContatti DESC;
+
+Riferimento:
+SELECT nazione_contatto, COUNT(id_contatto) AS NumeroContatti FROM [bi].[CONTT_contatti] GROUP BY nazione_contatto ORDER BY NumeroContatti DESC;
+Match (EM): True
+
+--- Esempio 59 ---
+Domanda: Quanti veicoli unici (identificati da telaio) ha gestito ciascun accettatore?
+Predizione:
+SELECT accettatore_commessa, COUNT(DISTINCT telaio_commessa) AS NumVeicoliUnici FROM [bi].[OFF_commesse] WHERE accettatore_commessa IS NOT NULL GROUP BY accettatore_commessa ORDER BY NumVeicoliUnici DESC;
+
+Riferimento:
+SELECT accettatore_commessa, COUNT(DISTINCT telaio_commessa) AS VeicoliUnici FROM [bi].[OFF_commesse] WHERE telaio_commessa IS NOT NULL GROUP BY accettatore_commessa;
+Match (EM): False
+
+--- Esempio 60 ---
+Domanda: Mostra il costo totale per tipo di intervento (somma costi lavorazioni e righe) per la commessa 'COM5050'.
+Predizione:
+SELECT i.descr_tipo_intervento, SUM(l.costo_lavorazione + r.imp_netto_costo_commessa) AS CostoTotale FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse_righe] r ON l.id_commessa = r.id_commessa JOIN [bi].[OFF_interventi_tipi] i ON r.id_tipo_intervento = i.id_tipo_intervento WHERE l.id_commessa = (SELECT id_commessa FROM [bi].[OFF_commesse] WHERE nr_commessa = 'COM5050') GROUP BY i.descr_tipo_intervento;
+
+Riferimento:
+WITH CostiIntervento AS ( SELECT id_tipo_intervento, SUM(ISNULL(costo_lavorazione, 0)) AS CostoLav FROM [bi].[OFF_commesse_lavorazioni] WHERE id_commessa = (SELECT id_commessa FROM [bi].[OFF_commesse] WHERE nr_commessa = 'COM5050') GROUP BY id_tipo_intervento UNION ALL SELECT id_tipo_intervento, SUM(ISNULL(imp_netto_costo_commessa, 0)) FROM [bi].[OFF_commesse_righe] WHERE id_commessa = (SELECT id_commessa FROM [bi].[OFF_commesse] WHERE nr_commessa = 'COM5050') GROUP BY id_tipo_intervento ) SELECT it.descr_tipo_intervento, SUM(CostoLav) AS CostoTotale FROM CostiIntervento ci JOIN [bi].[OFF_interventi_tipi] it ON ci.id_tipo_intervento = it.id_tipo_intervento GROUP BY it.descr_tipo_intervento;
+Match (EM): False
+
+--- Esempio 61 ---
+Domanda: Trova i contratti relativi a veicoli immatricolati prima del 2018.
+Predizione:
+SELECT c.nr_contratto, v.marca_veicolo, v.modello_veicolo, v.dt_immatricolazione_veicolo FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo WHERE v.dt_immatricolazione_veicolo < '2018-01-01';
+
+Riferimento:
+SELECT c.nr_contratto, v.marca_veicolo, v.modello_veicolo, v.dt_immatricolazione_veicolo FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo WHERE v.dt_immatricolazione_veicolo < '2018-01-01';
+Match (EM): True
+
+--- Esempio 62 ---
+Domanda: Elenca le commesse che hanno avuto inconvenienti di tipo 'Elettrico' e 'Meccanico'.
+Predizione:
+SELECT DISTINCT c.nr_commessa FROM [bi].[OFF_commesse_inconvenienti] i JOIN [bi].[OFF_commesse] c ON i.id_commessa = c.id_commessa WHERE i.tipo_inconveniente IN ('Elettrico', 'Meccanico');
+
+Riferimento:
+SELECT id_commessa FROM [bi].[OFF_commesse_inconvenienti] WHERE tipo_inconveniente IN ('Elettrico', 'Meccanico') GROUP BY id_commessa HAVING COUNT(DISTINCT tipo_inconveniente) = 2;
+Match (EM): False
+
+--- Esempio 63 ---
+Domanda: Quali tipi di contatto (codice) non sono mai stati legati a contratti ancora in corso?
+Predizione:
+SELECT codice_tipo_contatto FROM [bi].[AUTO_contatti_tipi] WHERE id_tipo_contatto NOT IN (SELECT DISTINCT id_tipo_contatto FROM [bi].[AUTO_contratti] WHERE status_contratto <> 'Chiuso');
+    
+Riferimento:
+SELECT codice_tipo_contatto FROM [bi].[AUTO_contatti_tipi] WHERE id_tipo_contatto NOT IN (SELECT DISTINCT id_tipo_contatto FROM [bi].[AUTO_contratti] WHERE status_contratto <> 'Chiuso');
+Match (EM): True
+
+--- Esempio 64 ---
+Domanda: Quanti contatti per ogni provincia che non sia 'MI' o 'TO'?
+Predizione:
+SELECT provincia_contatto, COUNT(id_contatto) AS NumContatti FROM [bi].[CONTT_contatti] WHERE provincia_contatto NOT IN ('MI', 'TO') GROUP BY provincia_contatto;
+
+Riferimento:
+SELECT provincia_contatto, COUNT(*) AS NumContatti FROM [bi].[CONTT_contatti] WHERE provincia_contatto NOT IN ('MI', 'TO') GROUP BY provincia_contatto;
+Match (EM): False
+
+--- Esempio 65 ---
+Domanda: Trova gli inconvenienti la cui descrizione include la parola 'rumore'.
+Predizione:
+SELECT id_inconveniente, descr_breve_inconveniente FROM [bi].[OFF_commesse_inconvenienti] WHERE descr_breve_inconveniente LIKE '%rumore%';
+
+Riferimento:
+SELECT id_inconveniente, descr_inconveniente FROM [bi].[OFF_commesse_inconvenienti] WHERE descr_inconveniente LIKE '%rumore%';
+Match (EM): False
+
+--- Esempio 66 ---
+Domanda: Quanti tipi di contatto cliente (gruppo) distinti ci sono?
+Predizione:
+SELECT COUNT(DISTINCT gruppo_tipo_contatto) FROM [bi].[AUTO_contatti_tipi] WHERE gruppo_tipo_contatto IS NOT NULL;
+
+Riferimento:
+SELECT COUNT(DISTINCT gruppo_tipo_contatto) FROM [bi].[AUTO_contatti_tipi] WHERE gruppo_tipo_contatto IS NOT NULL;
+Match (EM): True
+
+--- Esempio 67 ---
+Domanda: Qual è la percentuale media di addebito al cliente nelle righe della commessa 'COM2323'?
+Predizione:
+SELECT AVG(perc_addebito_cliente_commessa) FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_commesse] AS c ON r.id_commessa = c.id_commessa WHERE c.nr_commessa = 'COM2323' AND r.perc_addebito_cliente_commessa IS NOT NULL;
+    
+Riferimento:
+SELECT AVG(perc_addebito_cliente_commessa) FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_commesse] AS c ON r.id_commessa = c.id_commessa WHERE c.nr_commessa = 'COM2323' AND r.perc_addebito_cliente_commessa IS NOT NULL;
+Match (EM): True
+
+--- Esempio 68 ---
+Domanda: Qual è il numero massimo di giorni fatturati per un singolo noleggio?
+Predizione:
+SELECT MAX(giorni_fatturati_noleggio) FROM [bi].[OFF_noleggi] WHERE giorni_fatturati_noleggio IS NOT NULL;
+    
+Riferimento:
+SELECT MAX(giorni_fatturati_noleggio) FROM [bi].[OFF_noleggi];
+Match (EM): False
+
+--- Esempio 69 ---
+Domanda: Percentuale di auto elettriche vendute sul totale delle auto vendute negli ultimi 12 mesi.
+Predizione:
+SELECT CAST(SUM(CASE WHEN v.alimentazione_veicolo = 'Elettrica' THEN 1 ELSE 0 END) AS FLOAT) * 100 / COUNT(c.id_contratto) AS PercAutoElettriche FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_veicoli] v ON c.id_veicolo = v.id_veicolo WHERE c.dt_apertura_contratto >= DATEADD(month, -12, GETDATE());
+
+Riferimento:
+SELECT CAST(SUM(CASE WHEN v.alimentazione_veicolo = 'Elettrica' THEN 1 ELSE 0 END) AS FLOAT) * 100 / COUNT(c.id_contratto) AS PercentualeElettriche FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_veicoli] v ON c.id_veicolo = v.id_veicolo WHERE c.dt_apertura_contratto >= DATEADD(year, -1, GETDATE());
+Match (EM): False
+
+--- Esempio 70 ---
+Domanda: Elenca gli articoli (codice) il cui costo medio ponderato è aumentato rispetto alla riga precedente nella stessa commessa.
+Predizione:
+WITH LaggedCost AS ( SELECT id_commessa, nr_riga_commessa, codice_articolo_commessa, imp_netto_costo_medio_ponderato_commessa, LAG(imp_netto_costo_medio_ponderato_commessa, 1, 0) OVER (PARTITION BY id_commessa ORDER BY nr_riga_commessa) AS PrevCost FROM [bi].[OFF_commesse_righe] ) SELECT codice_articolo_commessa FROM LaggedCost WHERE imp_netto_costo_medio_ponderato_commessa > PrevCost;
+
+Riferimento:
+WITH LaggedCost AS ( SELECT id_commessa, nr_riga_commessa, codice_articolo_commessa, imp_netto_costo_medio_ponderato_commessa, LAG(imp_netto_costo_medio_ponderato_commessa, 1, 0) OVER (PARTITION BY id_commessa, codice_articolo_commessa ORDER BY nr_riga_commessa) AS PrevCost FROM [bi].[OFF_commesse_righe] WHERE codice_articolo_commessa IS NOT NULL ) SELECT DISTINCT codice_articolo_commessa FROM LaggedCost WHERE imp_netto_costo_medio_ponderato_commessa > PrevCost;
+Match (EM): False
+
+--- Esempio 71 ---
+Domanda: Elenca i contratti (ID Redd) dove il margine consuntivo è esattamente zero.
+Predizione:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] GROUP BY id_contratto_redd HAVING SUM(ISNULL(imp_ricavo_consuntivo_redd, 0) - ISNULL(imp_costo_consuntivo_redd, 0)) = 0;
+
+Riferimento:
+SELECT id_contratto_redd FROM [bi].[AUTO_contratti_redd] GROUP BY id_contratto_redd HAVING SUM(ISNULL(imp_ricavo_consuntivo_redd, 0) - ISNULL(imp_costo_consuntivo_redd, 0)) = 0;
+Match (EM): True
+
+--- Esempio 72 ---
+Domanda: Elenca i codici articolo utilizzati in commesse classificate come 'Incidente'.
+Predizione:
+SELECT DISTINCT r.codice_articolo_commessa FROM [bi].[OFF_commesse_righe] r JOIN [bi].[OFF_commesse] c ON r.id_commessa = c.id_commessa WHERE c.codice_tipo_commessa = 'Incidente';
+
+Riferimento:
+SELECT DISTINCT r.codice_articolo_commessa FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_commesse_tipi] AS ct ON r.codice_tipo_commessa = ct.codice_tipo_commessa WHERE ct.descr_tipo_commessa = 'Incidente' AND r.codice_articolo_commessa IS NOT NULL;
+Match (EM): False
+
+--- Esempio 73 ---
+Domanda: Mostra i noleggi con km percorsi giornalmente (calcolati come (consegna-ritiro)/durata) superiori a 200.
+Predizione:
+SELECT id_riga_noleggio, targa_noleggio, (CONVERT(float, km_consegna_noleggio) - CONVERT(float, km_ritiro_noleggio)) / DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) AS KmGiornalieri FROM [bi].[OFF_noleggi] WHERE DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) > 0 AND (CONVERT(float, km_consegna_noleggio) - CONVERT(float, km_ritiro_noleggio)) / DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) > 200;
+
+Riferimento:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE dt_consegna_noleggio IS NOT NULL AND dt_ritiro_noleggio IS NOT NULL AND DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) > 0 AND (km_consegna_noleggio - km_ritiro_noleggio) / DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) > 200;
+Match (EM): False
+
+--- Esempio 74 ---
+Domanda: Elenca i noleggi fatturati nell'ultimo mese.
+Predizione:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE tipo_doc_fatt_noleggio = 'Factura' AND dt_doc_noleggio >= DATEADD(month, -1, GETDATE());
+
+Riferimento:
+SELECT id_riga_noleggio, targa_noleggio, imp_fatt_noleggio FROM [bi].[OFF_noleggi] WHERE dt_doc_noleggio >= DATEADD(month, -1, GETDATE());
+Match (EM): False
+
+--- Esempio 75 ---
+Domanda: Quali sono le 3 provenienze con il numero più basso di contratti legati?
+Predizione:
+SELECT TOP 3 p.descr_provenienza, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_provenienze] AS p ON c.id_provenienza = p.id_provenienza GROUP BY p.descr_provenienza ORDER BY NumContratti ASC;
+
+Riferimento:
+SELECT TOP 3 p.descr_provenienza, COUNT(c.id_contratto) AS NumeroContratti FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_provenienze] AS p ON c.id_provenienza = p.id_provenienza GROUP BY p.descr_provenienza ORDER BY NumeroContratti ASC;
+Match (EM): False
+
+--- Esempio 76 ---
+Domanda: Mostra il numero totale di ore (presenza + straordinario) per ogni esecutore nell'ultimo mese.
+Predizione:
+SELECT e.descr_esecutore, SUM(p.ore_presenza + p.ore_straordinarie_presenza) AS TotOre FROM [bi].[OFF_presenze] p JOIN [bi].[OFF_esecutori] e ON p.id_esecutore = e.id_esecutore WHERE p.dt_presenza >= DATEADD(month, -1, GETDATE()) GROUP BY e.descr_esecutore;
+
+Riferimento:
+SELECT e.descr_esecutore, SUM(p.ore_presenza + p.ore_straordinarie_presenza) AS OreTotali FROM [bi].[OFF_presenze] p JOIN [bi].[OFF_esecutori] e ON p.id_esecutore = e.id_esecutore WHERE p.dt_presenza >= DATEADD(month, -1, GETDATE()) GROUP BY e.descr_esecutore;
+Match (EM): False
+
+--- Esempio 77 ---
+Domanda: Determina il margine (ricavo effettivo - costo effettivo) per il contratto '2023-GF-A12345'.
+Predizione:
+SELECT SUM(ISNULL(r.imp_ricavo_consuntivo_redd, 0) - ISNULL(r.imp_costo_consuntivo_redd, 0)) AS Margine FROM [bi].[AUTO_contratti_redd] r JOIN [bi].[AUTO_contratti] c ON r.id_contratto_redd = c.id_contratto_redd WHERE c.nr_contratto = '2023-GF-A12345';
+
+Riferimento:
+SELECT SUM(ISNULL(imp_ricavo_consuntivo_redd, 0) - ISNULL(imp_costo_consuntivo_redd, 0)) AS MargineContratto FROM [bi].[AUTO_contratti_redd] AS r JOIN [bi].[AUTO_contratti] AS c ON r.id_contratto_redd = c.id_contratto_redd WHERE c.nr_contratto = '2023-GF-A12345';
+Match (EM): False
+
+--- Esempio 78 ---
+Domanda: Quanti tipi di voce (codice) distinti sono associati a righe commessa?
+Predizione:
+SELECT COUNT(DISTINCT codice_voce_commessa) FROM [bi].[OFF_commesse_righe] WHERE codice_voce_commessa IS NOT NULL;
+
+Riferimento:
+SELECT COUNT(DISTINCT id_voce) FROM [bi].[OFF_commesse_righe];
+Match (EM): False
+
+--- Esempio 79 ---
+Domanda: Quante ore totali sono state fatturate dagli esecutori con qualifica null o vuota?
+Predizione:
+SELECT SUM(l.ore_fatturate_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] AS l WHERE l.id_esecutore IN (SELECT id_esecutore FROM [bi].[OFF_esecutori] WHERE qualifica_esecutore IS NULL OR qualifica_esecutore = '');
+
+Riferimento:
+SELECT SUM(l.ore_fatturate_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_esecutori] AS e ON l.id_esecutore = e.id_esecutore WHERE e.qualifica_esecutore IS NULL OR e.qualifica_esecutore = '';
+Match (EM): False
+
+--- Esempio 80 ---
+Domanda: Quanti contratti sono stati stipulati presso il punto vendita 'Showroom Principale'?
+Predizione:
+SELECT COUNT(c.id_contratto) FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_sedi] AS s ON c.id_sede = s.id_sede WHERE s.descr_punto_vendita = 'Showroom Principale';
+    
+Riferimento:
+SELECT COUNT(c.id_contratto) FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_sedi] AS s ON c.id_sede = s.id_sede WHERE s.descr_punto_vendita = 'Showroom Principale';
+Match (EM): True
+
+--- Esempio 81 ---
+Domanda: Qual è il costo medio delle lavorazioni per tipo commessa e per gruppo esecutore?
+Predizione:
+SELECT c.descr_tipo_commessa, e.gruppo_esecutore, AVG(l.costo_lavorazione) AS CostoMedioLavorazione FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa JOIN [bi].[OFF_esecutori] e ON l.id_esecutore = e.id_esecutore GROUP BY c.descr_tipo_commessa, e.gruppo_esecutore;
+
+Riferimento:
+SELECT ct.descr_tipo_commessa, e.gruppo_esecutore, AVG(l.costo_lavorazione) AS CostoMedio FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse_tipi] ct ON l.id_tipo_commessa = ct.id_tipo_commessa JOIN [bi].[OFF_esecutori] e ON l.id_esecutore = e.id_esecutore GROUP BY ct.descr_tipo_commessa, e.gruppo_esecutore;
+Match (EM): False
+
+--- Esempio 82 ---
+Domanda: Qual è il numero medio di giorni intercorsi tra la creazione della commessa e l'inizio effettivo dei lavori?
+Predizione:
+SELECT AVG(DATEDIFF(day, dt_creazione_commessa, dt_inizio_lavoro_commessa)) FROM [bi].[OFF_commesse] WHERE dt_creazione_commessa IS NOT NULL AND dt_inizio_lavoro_commessa IS NOT NULL AND dt_creazione_commessa < dt_inizio_lavoro_commessa;
+
+Riferimento:
+SELECT AVG(DATEDIFF(day, dt_creazione_commessa, dt_inizio_lavoro_commessa)) FROM [bi].[OFF_commesse] WHERE dt_creazione_commessa IS NOT NULL AND dt_inizio_lavoro_commessa IS NOT NULL;
+Match (EM): False
+
+--- Esempio 83 ---
+Domanda: Elenca le commesse associate solo a inconvenienti di tipo 'Cliente'.
+Predizione:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse_inconvenienti] i JOIN [bi].[OFF_commesse] c ON i.id_commessa = c.id_commessa GROUP BY c.nr_commessa HAVING MIN(i.tipo_carico_cliente_inconveniente) = 'Cliente' AND MAX(i.tipo_carico_cliente_inconveniente) = 'Cliente';
+    
+Riferimento:
+SELECT id_commessa FROM [bi].[OFF_commesse_inconvenienti] GROUP BY id_commessa HAVING MIN(tipo_carico_cliente_inconveniente) = 'Cliente' AND MAX(tipo_carico_cliente_inconveniente) = 'Cliente' AND MAX(ISNULL(tipo_carico_garanzia_inconveniente,'')) = '';
+Match (EM): False
+
+--- Esempio 84 ---
+Domanda: Individua il costo consuntivo più alto associato alla descrizione riga 'Sconto Promozionale'.
+Predizione:
+SELECT MAX(imp_costo_consuntivo_redd) FROM [bi].[AUTO_contratti_redd] WHERE descr_riga_redd = 'Sconto Promozionale';
+    
+Riferimento:
+SELECT MAX(imp_costo_consuntivo_redd) FROM [bi].[AUTO_contratti_redd] WHERE descr_riga_redd = 'Sconto Promozionale';
+Match (EM): True
+
+--- Esempio 85 ---
+Domanda: Mostra i noleggi chiusi associati a commesse ancora aperte.
+Predizione:
+SELECT n.id_riga_noleggio, n.targa_noleggio FROM [bi].[OFF_noleggi] n JOIN [bi].[OFF_commesse] c ON n.id_commessa = c.id_commessa WHERE c.dt_chiusura_commessa IS NULL AND n.dt_chiusura_noleggio IS NOT NULL;
+
+Riferimento:
+SELECT n.id_riga_noleggio, n.targa_noleggio FROM [bi].[OFF_noleggi] n JOIN [bi].[OFF_commesse] c ON n.id_commessa = c.id_commessa WHERE n.dt_chiusura_noleggio IS NOT NULL AND c.dt_chiusura_commessa IS NULL;
+Match (EM): False
+
+--- Esempio 86 ---
+Domanda: Quanti clienti diversi (basati su ID Contatto) ha seguito ogni venditore?
+Predizione:
+SELECT v.descr_venditore, COUNT(DISTINCT c.id_cliente) AS ClientiUnici FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_venditori] AS v ON c.id_venditore = v.id_venditore GROUP BY v.descr_venditore;
+
+Riferimento:
+SELECT v.descr_venditore, COUNT(DISTINCT c.id_cliente) AS ClientiUnici FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_venditori] AS v ON c.id_venditore = v.id_venditore GROUP BY v.descr_venditore;
+Match (EM): True
+
+--- Esempio 87 ---
+Domanda: Trova i contratti con garanzia interna la cui descrizione include la parola 'anni'.
+Predizione:
+SELECT nr_contratto, garanzia_interna_contratto FROM [bi].[AUTO_contratti] WHERE garanzia_interna_contratto LIKE '%anni%';
+    
+Riferimento:
+SELECT nr_contratto, garanzia_interna_contratto FROM [bi].[AUTO_contratti] WHERE garanzia_interna_contratto LIKE '%anni%';
+Match (EM): True
+
+--- Esempio 88 ---
+Domanda: Mostra i venditori che hanno concluso vendite con clienti per cui è stata aperta una commessa in officina nello stesso mese della vendita.
+Predizione:
+SELECT DISTINCT v.descr_venditore FROM [bi].[AUTO_contratti] ac JOIN [bi].[AUTO_venditori] v ON ac.id_venditore = v.id_venditore JOIN [bi].[AUTO_clienti] cli ON ac.id_cliente = cli.id_cliente JOIN [bi].[OFF_commesse] oc ON cli.id_contatto = oc.id_cliente_officina JOIN [bi].[OFF_clienti] occli ON oc.id_cliente_officina = occli.id_cliente_officina JOIN [bi].[OFF_veicoli] ov ON oc.id_veicolo_officina = ov.id_veicolo_officina WHERE ac.status_contratto = 'Chiuso' AND oc.dt_apertura_commessa >= ac.dt_chiusura_contratto AND oc.dt_apertura_commessa <= DATEADD(month, 1, ac.dt_chiusura_contratto);
+
+Riferimento:
+SELECT DISTINCT v.descr_venditore FROM [bi].[AUTO_contratti] AS ac JOIN [bi].[AUTO_venditori] AS v ON ac.id_venditore = v.id_venditore JOIN [bi].[AUTO_clienti] AS cli ON ac.id_cliente = cli.id_cliente JOIN [bi].[OFF_commesse] AS oc ON cli.id_contatto = oc.id_cliente_officina WHERE YEAR(ac.dt_apertura_contratto) = YEAR(oc.dt_apertura_commessa) AND MONTH(ac.dt_apertura_contratto) = MONTH(oc.dt_apertura_commessa);
+Match (EM): False
+
+--- Esempio 89 ---
+Domanda: Mostra il rapporto tra ore di permesso e ore totali di presenza per ogni mese.
+Predizione:
+SELECT YEAR(dt_presenza) AS Anno, MONTH(dt_presenza) AS Mese, SUM(ore_permessi_presenza) / NULLIF(SUM(ore_presenza), 0) AS RapportoPermessiPresenza FROM [bi].[OFF_presenze] GROUP BY YEAR(dt_presenza), MONTH(dt_presenza) ORDER BY Anno, Mese;
+
+Riferimento:
+SELECT YEAR(dt_presenza) AS Anno, MONTH(dt_presenza) AS Mese, SUM(ore_permessi_presenza) / NULLIF(SUM(ore_presenza), 0) AS RapportoPermessiPresenza FROM [bi].[OFF_presenze] GROUP BY YEAR(dt_presenza), MONTH(dt_presenza) ORDER BY Anno, Mese;
+Match (EM): True
+
+--- Esempio 90 ---
+Domanda: Mostra i tipi di costo/ricavo (descr) che non hanno mai avuto valori negativi a consuntivo.
+Predizione:
+SELECT DISTINCT descr_tipo_costo_ricavo_redd FROM [bi].[AUTO_contratti_redd] WHERE codice_tipo_costo_ricavo_redd NOT IN (SELECT codice_tipo_costo_ricavo_redd FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_consuntivo_redd < 0 OR imp_ricavo_consuntivo_redd < 0);
+
+Riferimento:
+SELECT descr_tipo_costo_ricavo_redd FROM [bi].[AUTO_contratti_redd] GROUP BY descr_tipo_costo_ricavo_redd HAVING MIN(ISNULL(imp_costo_consuntivo_redd, 0)) >= 0 AND MIN(ISNULL(imp_ricavo_consuntivo_redd, 0)) >= 0;
+Match (EM): False
+
+--- Esempio 91 ---
+Domanda: Quanti inconvenienti di gruppo 'Motore' sono stati caricati in garanzia?
+Predizione:
+SELECT COUNT(id_inconveniente) FROM [bi].[OFF_commesse_inconvenienti] WHERE gruppo_inconveniente = 'Motore' AND tipo_carico_garanzia_inconveniente IS NOT NULL AND tipo_carico_garanzia_inconveniente <> '';
+This question is part of a practice test. For the complete test, visit our testing page.
+## Want to practice similar questions? Download the Testprepkit app on Google Play.
+Riferimento:
+SELECT COUNT(id_inconveniente) FROM [bi].[OFF_commesse_inconvenienti] WHERE gruppo_inconveniente = 'Motore' AND tipo_carico_garanzia_inconveniente IS NOT NULL AND tipo_carico_garanzia_inconveniente <> '';
+Match (EM): False
+
+--- Esempio 92 ---
+Domanda: Elenca i tipi di intervento (descrizione) associati a righe omaggio.
+Predizione:
+SELECT DISTINCT ti.descr_tipo_intervento FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_interventi_tipi] AS ti ON r.id_tipo_intervento = ti.id_tipo_intervento WHERE r.is_omaggio_commessa = 1;
+
+Riferimento:
+SELECT DISTINCT it.descr_tipo_intervento FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_interventi_tipi] AS it ON r.id_tipo_intervento = it.id_tipo_intervento WHERE r.is_omaggio_commessa = 1;
+Match (EM): False
+
+--- Esempio 93 ---
+Domanda: Mostra la differenza percentuale mese su mese del numero di contratti aperti nell'ultimo anno.
+Predizione:
+SELECT YEAR(c.dt_apertura_contratto) AS Anno, MONTH(c.dt_apertura_contratto) AS Mese, COUNT(c.id_contratto) AS NumContratti, LAG(COUNT(c.id_contratto), 1, 0) OVER (PARTITION BY YEAR(c.dt_apertura_contratto) ORDER BY YEAR(c.dt_apertura_contratto), MONTH(c.dt_apertura_contratto)) AS PrevMonth, COUNT(c.id_contratto) - LAG(COUNT(c.id_contratto), 1, 0) OVER (PARTITION BY YEAR(c.dt_apertura_contratto) ORDER BY YEAR(c.dt_apertura_contratto), MONTH(c.dt_apertura_contratto)) AS DiffMonth FROM [bi].[AUTO_contratti] c WHERE c.dt_apertura_contratto >= DATEADD(year, -1, GETDATE()) GROUP BY YEAR(c.dt_apertura_contratto), MONTH(c.dt_apertura_contratto) ORDER BY Anno, Mese;
+    
+Riferimento:
+WITH MonthlyContracts AS ( SELECT YEAR(dt_apertura_contratto) AS Anno, MONTH(dt_apertura_contratto) AS Mese, COUNT(id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] WHERE dt_apertura_contratto >= DATEADD(year, -1, GETDATE()) GROUP BY YEAR(dt_apertura_contratto), MONTH(dt_apertura_contratto) ), LaggedContracts AS ( SELECT Anno, Mese, NumContratti, LAG(NumContratti, 1, 0) OVER (ORDER BY Anno, Mese) AS PrevMonthContracts FROM MonthlyContracts ) SELECT Anno, Mese, NumContratti, PrevMonthContracts, CASE WHEN PrevMonthContracts > 0 THEN (CAST(NumContratti AS FLOAT) - PrevMonthContracts) * 100 / PrevMonthContracts ELSE NULL END AS VariazionePercMensile FROM LaggedContracts ORDER BY Anno, Mese;
+Match (EM): False
+
+--- Esempio 94 ---
+Domanda: Quali descrizioni di margine sono associate all'indice contabile costo 5?
+Predizione:
+SELECT DISTINCT descr_margine_redd FROM [bi].[AUTO_contratti_redd] WHERE idx_contabile_costo_redd = 5;
+
+Riferimento:
+SELECT DISTINCT descr_margine_redd FROM [bi].[AUTO_contratti_redd] WHERE idx_contabile_costo_redd = 5;
+Match (EM): True
+
+--- Esempio 95 ---
+Domanda: Trova gli inconvenienti con numero riga 1.
+Predizione:
+SELECT id_inconveniente, descr_breve_inconveniente FROM [bi].[OFF_commesse_inconvenienti] WHERE riga_inconveniente = 1;
+
+Riferimento:
+SELECT id_inconveniente, descr_breve_inconveniente FROM [bi].[OFF_commesse_inconvenienti] WHERE riga_inconveniente = '1';
+Match (EM): False
+
+--- Esempio 96 ---
+Domanda: Quali sedi (descrizione) hanno venduto auto di marca 'Jeep'?
+Predizione:
+SELECT DISTINCT s.descr_sede FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_sedi] AS s ON c.id_sede = s.id_sede JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo WHERE v.marca_veicolo = 'Jeep';
+
+Riferimento:
+SELECT DISTINCT s.descr_sede FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_sedi] AS s ON c.id_sede = s.id_sede JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo WHERE v.marca_veicolo = 'Jeep';
+Match (EM): True
+
+--- Esempio 97 ---
+Domanda: Qual è la differenza media di km tra consegna e ritiro per i noleggi?
+Predizione:
+SELECT AVG(km_consegna_noleggio - km_ritiro_noleggio) FROM [bi].[OFF_noleggi] WHERE km_consegna_noleggio IS NOT NULL AND km_ritiro_noleggio IS NOT NULL;
+    
+Riferimento:
+SELECT AVG(km_consegna_noleggio - km_ritiro_noleggio) AS KmMediPercorsi FROM [bi].[OFF_noleggi] WHERE km_consegna_noleggio IS NOT NULL AND km_ritiro_noleggio IS NOT NULL;
+Match (EM): False
+
+--- Esempio 98 ---
+Domanda: Trova i noleggi con costo veicolo > 100 e costo carburante > 20.
+Predizione:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE costo_veicolo_noleggio > 100 AND costo_carburante_noleggio > 20;
+    
+Riferimento:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE costo_veicolo_noleggio > 100 AND costo_carburante_noleggio > 20;
+Match (EM): True
+
+--- Esempio 99 ---
+Domanda: Qual è il valore medio delle permute per i contratti con finanziamento?
+Predizione:
+SELECT AVG(imp_netto_permute_contratto) FROM [bi].[AUTO_contratti] WHERE has_finanziamento_contratto = 1 AND count_permute_contratto > 0;
+    
+Riferimento:
+SELECT AVG(imp_netto_permute_contratto) FROM [bi].[AUTO_contratti] WHERE has_finanziamento_contratto = 1 AND count_permute_contratto > 0;
+Match (EM): True
+
+--- Esempio 100 ---
+Domanda: Qual è il tempo medio che intercorre tra l'acquisto di un veicolo e la sua prima commessa in officina?
+Predizione:
+SELECT AVG(DATEDIFF(day, v.dt_acquisto_veicolo, c.dt_apertura_commessa)) FROM [bi].[AUTO_veicoli] v JOIN [bi].[OFF_commesse] c ON v.targa_veicolo_officina = c.targa_veicolo_officina WHERE v.dt_acquisto_veicolo IS NOT NULL AND c.dt_apertura_commessa IS NOT NULL;
+
+Riferimento:
+WITH FirstWorkshop AS ( SELECT oc.id_cliente_officina, v.targa_veicolo_officina, MIN(oc.dt_apertura_commessa) AS PrimaCommessa FROM [bi].[OFF_commesse] oc JOIN [bi].[OFF_veicoli] v ON oc.id_veicolo_officina = v.id_veicolo_officina GROUP BY oc.id_cliente_officina, v.targa_veicolo_officina ) SELECT AVG(DATEDIFF(day, av.dt_acquisto_veicolo, fw.PrimaCommessa)) AS GiorniMediAcquistoPrimaCommessa FROM [bi].[AUTO_veicoli] av JOIN FirstWorkshop fw ON av.targa_veicolo = fw.targa_veicolo_officina WHERE av.dt_acquisto_veicolo IS NOT NULL;
+Match (EM): False
+
+--- Esempio 101 ---
+Domanda: Mostra le commesse con codice ODL 'ODL123'.
+Predizione:
+SELECT nr_commessa, dt_apertura_commessa FROM [bi].[OFF_commesse] WHERE codice_odl_commessa = 'ODL123';
+
+Riferimento:
+SELECT nr_commessa, dt_apertura_commessa FROM [bi].[OFF_commesse] WHERE codice_odl_commessa = 'ODL123';
+Match (EM): True
+
+--- Esempio 102 ---
+Domanda: Elenca le officine che hanno gestito commesse durante l'anno corrente.
+Predizione:
+SELECT DISTINCT o.descr_officina FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_officine] AS o ON c.id_officina = o.id_officina WHERE YEAR(c.dt_apertura_commessa) = YEAR(GETDATE());
+
+Riferimento:
+SELECT DISTINCT o.descr_officina FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_officine] AS o ON c.id_officina = o.id_officina WHERE YEAR(c.dt_apertura_commessa) = YEAR(GETDATE());
+Match (EM): True
+
+--- Esempio 103 ---
+Domanda: Qual è il ranking dei tipi veicolo (Nuovo/Usato) per numero di contratti con permuta?
+Predizione:
+SELECT v.nuovo_usato_veicolo, SUM(CASE WHEN c.count_permute_contratto > 0 THEN 1 ELSE 0 END) AS NumPermute FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_veicoli] v ON c.id_veicolo = v.id_veicolo GROUP BY v.nuovo_usato_veicolo ORDER BY NumPermute DESC;
+
+Riferimento:
+WITH PermutaRank AS ( SELECT v.nuovo_usato_veicolo, COUNT(c.id_contratto) AS NumPermute FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_veicoli] v ON c.id_veicolo = v.id_veicolo WHERE c.count_permute_contratto > 0 GROUP BY v.nuovo_usato_veicolo ) SELECT nuovo_usato_veicolo, NumPermute, RANK() OVER (ORDER BY NumPermute DESC) AS Ranking FROM PermutaRank;
+Match (EM): False
+
+--- Esempio 104 ---
+Domanda: Trova i noleggi con note di ritiro specificate.
+Predizione:
+SELECT id_riga_noleggio, targa_noleggio, note_ritiro_noleggio FROM [bi].[OFF_noleggi] WHERE note_ritiro_noleggio IS NOT NULL AND note_ritiro_noleggio <> '';
+
+Riferimento:
+SELECT id_riga_noleggio, targa_noleggio, note_ritiro_noleggio FROM [bi].[OFF_noleggi] WHERE note_ritiro_noleggio IS NOT NULL AND note_ritiro_noleggio <> '';
+Match (EM): True
+
+--- Esempio 105 ---
+Domanda: Individua le righe di commessa con un costo associato ma valore fatturato pari a zero (o nullo).
+Predizione:
+SELECT id_commessa, nr_riga_commessa FROM [bi].[OFF_commesse_righe] WHERE imp_netto_costo_commessa > 0 AND (imp_netto_riga_commessa IS NULL OR imp_netto_riga_commessa = 0);
+
+Riferimento:
+SELECT id_commessa, nr_riga_commessa FROM [bi].[OFF_commesse_righe] WHERE imp_netto_costo_commessa > 0 AND (imp_netto_riga_commessa IS NULL OR imp_netto_riga_commessa = 0);
+Match (EM): True
+
+--- Esempio 106 ---
+Domanda: Quali sono i clienti (ID Contatto) che hanno avuto solo noleggi a breve termine?
+Predizione:
+SELECT DISTINCT id_contatto FROM [bi].[OFF_noleggi] WHERE is_lungo_termine_noleggio = 'N';
+
+Riferimento:
+SELECT id_contatto FROM [bi].[OFF_noleggi] GROUP BY id_contatto HAVING MAX(is_lungo_termine_noleggio) = 'N';
+Match (EM): False
+
+--- Esempio 107 ---
+Domanda: Quante ore totali sono state registrate a tempario dagli esecutori di tipo 'Carrozziere'?
+Predizione:
+SELECT SUM(l.ore_tempario_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_esecutori_tipi] AS et ON l.id_tipo_esecutore = et.id_tipo_esecutore WHERE et.descr_tipo_esecutore = 'Carrozziere';
+    
+Riferimento:
+SELECT SUM(l.ore_tempario_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_esecutori_tipi] AS et ON l.id_tipo_esecutore = et.id_tipo_esecutore WHERE et.descr_tipo_esecutore = 'Carrozziere';
+Match (EM): True
+
+--- Esempio 108 ---
+Domanda: Mostra i contratti relativi a clienti il cui CAP inizia con le cifre '20'.
+Predizione:
+SELECT c.nr_contratto, c.dt_apertura_contratto FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_clienti] AS cli ON c.id_cliente = cli.id_cliente WHERE cli.cap_cliente LIKE '20%';
+    
+Riferimento:
+SELECT c.nr_contratto FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_clienti] AS cli ON c.id_cliente = cli.id_cliente WHERE cli.cap_cliente LIKE '20%';
+Match (EM): False
+
+--- Esempio 109 ---
+Domanda: Qual è il tipo di vendita (descrizione) associato al maggior valore finanziato totale?
+Predizione:
+SELECT TOP 1 tv.descr_tipo_vendita, SUM(c.imp_netto_finanziato_contratto) AS ValoreFinanziato FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_tipi_vendita] tv ON c.id_tipo_vendita = tv.id_tipo_vendita GROUP BY tv.descr_tipo_vendita ORDER BY ValoreFinanziato DESC;
+
+Riferimento:
+SELECT TOP 1 tv.descr_tipo_vendita, SUM(c.imp_netto_finanziato_contratto) AS TotFinanziato FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_tipi_vendita] tv ON c.id_tipo_vendita = tv.id_tipo_vendita WHERE c.has_finanziamento_contratto = 1 GROUP BY tv.descr_tipo_vendita ORDER BY TotFinanziato DESC;
+Match (EM): False
+
+--- Esempio 110 ---
+Domanda: Mostra i 3 gruppi di tipo cliente con il minor numero di contratti associati.
+Predizione:
+SELECT TOP 3 cli.gruppo_tipo_cliente, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_clienti] cli ON c.id_cliente = cli.id_cliente GROUP BY cli.gruppo_tipo_cliente ORDER BY NumContratti ASC;
+
+Riferimento:
+SELECT TOP 3 cli.gruppo_tipo_cliente, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_clienti] AS cli ON c.id_cliente = cli.id_cliente GROUP BY cli.gruppo_tipo_cliente ORDER BY NumContratti ASC;
+Match (EM): False
+
+--- Esempio 111 ---
+Domanda: Qual è il tempo medio trascorso tra l'apertura della commessa e la data in cui il veicolo è pronto?
+Predizione:
+SELECT AVG(DATEDIFF(day, dt_apertura_commessa, dt_veicolo_pronto_commessa)) FROM [bi].[OFF_commesse] WHERE dt_veicolo_pronto_commessa IS NOT NULL AND dt_apertura_commessa IS NOT NULL;
+
+Riferimento:
+SELECT AVG(DATEDIFF(day, dt_apertura_commessa, dt_veicolo_pronto_commessa)) FROM [bi].[OFF_commesse] WHERE dt_apertura_commessa IS NOT NULL AND dt_veicolo_pronto_commessa IS NOT NULL;
+Match (EM): False
+
+--- Esempio 112 ---
+Domanda: Qual è il margine previsto totale per i contratti con ricavo previsto superiore a 30000?
+Predizione:
+SELECT SUM(ISNULL(imp_ricavo_previsto_redd, 0)) AS RicavoPrevisto, SUM(ISNULL(imp_ricavo_previsto_redd, 0) - ISNULL(imp_costo_previsto_redd, 0)) AS MarginePrevisto FROM [bi].[AUTO_contratti_redd] WHERE imp_ricavo_previsto_redd > 30000;
+
+Riferimento:
+SELECT SUM(ISNULL(imp_ricavo_previsto_redd, 0) - ISNULL(imp_costo_previsto_redd, 0)) FROM [bi].[AUTO_contratti_redd] WHERE imp_ricavo_previsto_redd > 30000;
+Match (EM): False
+
+--- Esempio 113 ---
+Domanda: Qual è il ricavo consuntivo medio per ciascuna tipologia di costo/ricavo?
+Predizione:
+SELECT descr_tipo_costo_ricavo_redd, AVG(imp_ricavo_consuntivo_redd) AS MediaRicavo FROM [bi].[AUTO_contratti_redd] WHERE imp_ricavo_consuntivo_redd IS NOT NULL GROUP BY descr_tipo_costo_ricavo_redd;
+
+Riferimento:
+SELECT descr_tipo_costo_ricavo_redd, AVG(imp_ricavo_consuntivo_redd) AS RicavoConsMedio FROM [bi].[AUTO_contratti_redd] WHERE imp_ricavo_consuntivo_redd IS NOT NULL GROUP BY descr_tipo_costo_ricavo_redd;
+Match (EM): False
+
+--- Esempio 114 ---
+Domanda: Elenca i clienti (codice fiscale) con più di 10 contratti totali.
+Predizione:
+SELECT cli.codice_fiscale_cliente, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_clienti] cli ON c.id_cliente = cli.id_cliente GROUP BY cli.codice_fiscale_cliente HAVING COUNT(c.id_contratto) > 10;
+
+Riferimento:
+SELECT cli.codice_fiscale_cliente, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_clienti] AS cli ON c.id_cliente = cli.id_cliente GROUP BY cli.codice_fiscale_cliente HAVING COUNT(c.id_contratto) > 10;
+Match (EM): False
+
+--- Esempio 115 ---
+Domanda: Quanti inconvenienti ci sono stati per ogni tipo di intervento?
+Predizione:
+SELECT it.descr_tipo_intervento, COUNT(i.id_inconveniente) AS NumInconvenienti FROM [bi].[OFF_commesse_inconvenienti] i JOIN [bi].[OFF_interventi_tipi] it ON i.id_tipo_intervento = it.id_tipo_intervento GROUP BY it.descr_tipo_intervento;
+
+Riferimento:
+SELECT it.descr_tipo_intervento, COUNT(i.id_inconveniente) AS NumInconvenienti FROM [bi].[OFF_commesse_inconvenienti] AS i JOIN [bi].[OFF_interventi_tipi] AS it ON i.id_tipo_intervento = it.id_tipo_intervento GROUP BY it.descr_tipo_intervento;
+Match (EM): False
+
+--- Esempio 116 ---
+Domanda: Qual è l'importo totale dei contratti per ciascun punto vendita della sede 'Milano Sud'?
+Predizione:
+SELECT s.descr_punto_vendita, SUM(c.imp_netto_contratto) AS ImportoTotale FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_sedi] AS s ON c.id_sede = s.id_sede WHERE s.descr_sede = 'Milano Sud' GROUP BY s.descr_punto_vendita;
+
+Riferimento:
+SELECT s.descr_punto_vendita, SUM(c.imp_netto_contratto) AS ValoreTotale FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_sedi] AS s ON c.id_sede = s.id_sede WHERE s.descr_sede = 'Milano Sud' GROUP BY s.descr_punto_vendita;
+Match (EM): False
+
+--- Esempio 117 ---
+Domanda: Mostra i contratti relativi a veicoli la cui destinazione alla vendita è nulla.
+Predizione:
+SELECT c.nr_contratto FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo WHERE v.destinazione_alla_vendita_veicolo IS NULL;
+
+Riferimento:
+SELECT c.nr_contratto FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo WHERE v.destinazione_alla_vendita_veicolo IS NULL;
+Match (EM): True
+
+--- Esempio 118 ---
+Domanda: Trova le commesse aperte per veicoli con oltre 150.000 chilometri.
+Predizione:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse] AS c JOIN [bi].[OFF_veicoli] AS v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE c.dt_chiusura_commessa IS NULL AND v.km_percorsi_veicolo > 150000;
+
+Riferimento:
+SELECT c.nr_commessa FROM [bi].[OFF_commesse] c JOIN [bi].[OFF_veicoli] v_off ON c.id_veicolo_officina = v_off.id_veicolo_officina JOIN [bi].[AUTO_veicoli] v_auto ON v_off.targa_veicolo_officina = v_auto.targa_veicolo WHERE c.dt_chiusura_commessa IS NULL AND v_auto.km_percorsi_veicolo > 150000;
+Match (EM): False
+
+--- Esempio 119 ---
+Domanda: Qual è la media delle ore di permesso mensili per ciascun esecutore?
+Predizione:
+SELECT e.descr_esecutore, AVG(OrePermessiMensili) AS MediaOrePermessi FROM (SELECT id_esecutore, SUM(ore_permessi_presenza) AS OrePermessiMensili FROM [bi].[OFF_presenze] GROUP BY id_esecutore, EOMONTH(dt_presenza) ) AS OrePermessi JOIN [bi].[OFF_esecutori] e ON OrePermessi.id_esecutore = e.id_esecutore GROUP BY e.descr_esecutore;
+
+Riferimento:
+SELECT AVG(OrePermessiMensili) FROM (SELECT id_esecutore, YEAR(dt_presenza) AS Anno, MONTH(dt_presenza) AS Mese, SUM(ore_permessi_presenza) AS OrePermessiMensili FROM [bi].[OFF_presenze] GROUP BY id_esecutore, YEAR(dt_presenza), MONTH(dt_presenza)) AS MedieMensili;
+Match (EM): False
+
+--- Esempio 120 ---
+Domanda: Qual è il mese con la più alta percentuale di ore di assenza rispetto alle ore teoriche totali?
+Predizione:
+SELECT TOP 1 MONTH(dt_presenza) AS Mese, SUM(ore_assenza_presenza) * 100.0 / SUM(ore_teoriche_presenza) AS PercAssenza FROM [bi].[OFF_presenze] GROUP BY MONTH(dt_presenza) ORDER BY PercAssenza DESC;
+
+Riferimento:
+WITH MonthlyAbsenceRatio AS ( SELECT YEAR(dt_presenza) AS Anno, MONTH(dt_presenza) AS Mese, SUM(ore_assenza_presenza) / NULLIF(SUM(ore_teoriche_presenza), 0) AS RatioAssenza FROM [bi].[OFF_presenze] GROUP BY YEAR(dt_presenza), MONTH(dt_presenza) ) SELECT TOP 1 Anno, Mese, RatioAssenza FROM MonthlyAbsenceRatio WHERE RatioAssenza IS NOT NULL ORDER BY RatioAssenza DESC;
+Match (EM): False
+
+--- Esempio 121 ---
+Domanda: Qual è la commessa con la durata maggiore tra inizio e fine lavori?
+Predizione:
+SELECT TOP 1 nr_commessa, DATEDIFF(day, dt_inizio_lavoro_commessa, dt_fine_lavoro_commessa) AS Durata FROM [bi].[OFF_commesse] WHERE dt_inizio_lavoro_commessa IS NOT NULL AND dt_fine_lavoro_commessa IS NOT NULL ORDER BY Durata DESC;
+
+Riferimento:
+SELECT TOP 1 nr_commessa, DATEDIFF(day, dt_inizio_lavoro_commessa, dt_fine_lavoro_commessa) AS DurataLavori FROM [bi].[OFF_commesse] WHERE dt_inizio_lavoro_commessa IS NOT NULL AND dt_fine_lavoro_commessa IS NOT NULL ORDER BY DurataLavori DESC;
+Match (EM): False
+
+--- Esempio 122 ---
+Domanda: Mostra i noleggi con km percorsi al giorno (calcolati come (consegna-ritiro) / durata) superiori a 200.
+Predizione:
+SELECT id_riga_noleggio, targa_noleggio, (CONVERT(float, km_consegna_noleggio) - CONVERT(float, km_ritiro_noleggio)) / DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) AS KmPercorsiGiorno FROM [bi].[OFF_noleggi] WHERE (CONVERT(float, km_consegna_noleggio) - CONVERT(float, km_ritiro_noleggio)) / DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) > 200;
+
+Riferimento:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE dt_consegna_noleggio IS NOT NULL AND dt_ritiro_noleggio IS NOT NULL AND DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) > 0 AND (km_consegna_noleggio - km_ritiro_noleggio) / DATEDIFF(day, dt_ritiro_noleggio, dt_consegna_noleggio) > 200;
+Match (EM): False
+
+--- Esempio 123 ---
+Domanda: Trova i contatti (ID) che hanno lo stesso CAP e la stessa provincia ma ragioni sociali diverse.
+Predizione:
+SELECT id_contatto, ragione_sociale_contatto FROM [bi].[CONTT_contatti] WHERE cap_contatto = '12345' AND provincia_contatto = 'MI' GROUP BY ragione_sociale_contatto HAVING COUNT(DISTINCT ragione_sociale_contatto) > 1;
+
+Riferimento:
+SELECT cap_contatto, provincia_contatto, STRING_AGG(ragione_sociale_contatto, ', ') AS RagioniSociali FROM [bi].[CONTT_contatti] WHERE cap_contatto IS NOT NULL AND provincia_contatto IS NOT NULL GROUP BY cap_contatto, provincia_contatto HAVING COUNT(DISTINCT ragione_sociale_contatto) > 1;
+Match (EM): False
+
+--- Esempio 124 ---
+Domanda: Calcola la percentuale di ore straordinarie sul totale ore presenza per ciascuna officina.
+Predizione:
+SELECT o.descr_officina, SUM(p.ore_straordinarie_presenza) * 100.0 / NULLIF(SUM(p.ore_presenza), 0) AS PercStraordinari FROM [bi].[OFF_presenze] p JOIN [bi].[OFF_officine] o ON p.id_officina = o.id_officina WHERE p.ore_presenza > 0 GROUP BY o.descr_officina ORDER BY PercStraordinari DESC;
+
+Riferimento:
+SELECT o.descr_officina, SUM(p.ore_straordinarie_presenza) * 100.0 / NULLIF(SUM(p.ore_presenza), 0) AS PercStraordinari FROM [bi].[OFF_presenze] p JOIN [bi].[OFF_officine] o ON p.id_officina = o.id_officina GROUP BY o.descr_officina HAVING SUM(p.ore_presenza) > 0;
+Match (EM): False
+
+--- Esempio 125 ---
+Domanda: Trova i tecnici (codice esecutore) che hanno registrato ore di presenza ma nessuna ora lavorata nell'ultimo mese.
+Predizione:
+SELECT DISTINCT e.codice_esecutore FROM [bi].[OFF_presenze] p JOIN [bi].[OFF_esecutori] e ON p.id_esecutore = e.id_esecutore WHERE p.dt_presenza >= DATEADD(month, -1, GETDATE()) AND p.ore_presenza > 0 AND (SELECT SUM(p.ore_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa WHERE l.id_esecutore = p.id_esecutore AND c.dt_apertura_commessa >= DATEADD(month, -1, GETDATE())) IS NULL;
+
+Riferimento:
+SELECT DISTINCT p.id_esecutore FROM [bi].[OFF_presenze] p WHERE p.dt_presenza >= DATEADD(month, -1, GETDATE()) AND p.ore_presenza > 0 AND p.id_esecutore NOT IN (SELECT DISTINCT id_esecutore FROM [bi].[OFF_commesse_lavorazioni] WHERE dt_movimento_lavorazione >= DATEADD(month, -1, GETDATE()));
+Match (EM): False
+
+--- Esempio 126 ---
+Domanda: Elenca i clienti (descrittivo) che hanno sia contratti auto che noleggi attivi.
+Predizione:
+SELECT DISTINCT cli.descr_cliente FROM [bi].[AUTO_clienti] cli JOIN [bi].[AUTO_contratti] ac ON cli.id_cliente = ac.id_cliente JOIN [bi].[OFF_noleggi] n ON cli.id_contatto = n.id_contatto WHERE ac.status_contratto <> 'Chiuso' AND n.dt_chiusura_noleggio IS NULL;
+
+Riferimento:
+SELECT DISTINCT cli.descr_cliente FROM [bi].[AUTO_clienti] cli JOIN [bi].[AUTO_contratti] ac ON cli.id_cliente = ac.id_cliente JOIN [bi].[OFF_noleggi] n ON cli.id_contatto = n.id_contatto;
+Match (EM): False
+
+--- Esempio 127 ---
+Domanda: Elenca, per ogni anno, il venditore che ha generato il maggior valore totale di contratti.
+Predizione:
+SELECT YEAR(c.dt_apertura_contratto) AS Anno, v.descr_venditore, SUM(c.imp_netto_contratto) AS ValoreContratti FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_venditori] v ON c.id_venditore = v.id_venditore GROUP BY YEAR(c.dt_apertura_contratto), v.descr_venditore ORDER BY Anno DESC;
+
+Riferimento:
+WITH YearlySales AS ( SELECT YEAR(dt_apertura_contratto) AS Anno, id_venditore, SUM(imp_netto_contratto) AS ValoreTotale, ROW_NUMBER() OVER (PARTITION BY YEAR(dt_apertura_contratto) ORDER BY SUM(imp_netto_contratto) DESC) AS rn FROM [bi].[AUTO_contratti] GROUP BY YEAR(dt_apertura_contratto), id_venditore ) SELECT ys.Anno, v.descr_venditore, ys.ValoreTotale FROM YearlySales ys JOIN [bi].[AUTO_venditori] v ON ys.id_venditore = v.id_venditore WHERE ys.rn = 1 ORDER BY ys.Anno DESC;
+Match (EM): False
+
+--- Esempio 128 ---
+Domanda: Quali esecutori hanno lavorato sulla commessa con ID gestionale '98765'?
+Predizione:
+SELECT DISTINCT e.descr_esecutore FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_esecutori] e ON l.id_esecutore = e.id_esecutore JOIN [bi].[OFF_commesse] oc ON l.id_commessa = oc.id_commessa WHERE oc.id_gestionale_commessa = '98765';
+
+Riferimento:
+SELECT DISTINCT e.descr_esecutore FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_esecutori] AS e ON l.id_esecutore = e.id_esecutore JOIN [bi].[OFF_commesse] AS c ON l.id_commessa = c.id_commessa WHERE c.id_gestionale_commessa = 98765;
+Match (EM): False
+
+--- Esempio 129 ---
+Domanda: Trova i contratti auto associati a veicoli per cui non esiste una commessa officina.
+Predizione:
+SELECT ac.nr_contratto FROM [bi].[AUTO_contratti] ac JOIN [bi].[AUTO_veicoli] av ON ac.id_veicolo = av.id_veicolo WHERE av.targa_veicolo NOT IN (SELECT DISTINCT targa_veicolo_officina FROM [bi].[OFF_veicoli]);
+
+Riferimento:
+SELECT ac.nr_contratto FROM [bi].[AUTO_contratti] ac JOIN [bi].[AUTO_veicoli] av ON ac.id_veicolo = av.id_veicolo LEFT JOIN [bi].[OFF_veicoli] ov ON av.targa_veicolo = ov.targa_veicolo_officina WHERE ov.id_veicolo_officina IS NULL OR ov.id_veicolo_officina NOT IN (SELECT id_veicolo_officina FROM [bi].[OFF_commesse]);
+Match (EM): False
+
+--- Esempio 130 ---
+Domanda: Qual è la classifica dei veicoli (targa) per numero totale di giorni trascorsi in officina (somma durate commesse)?
+Predizione:
+WITH DurataCommessa AS ( SELECT v.targa_veicolo_officina, SUM(DATEDIFF(day, c.dt_apertura_commessa, c.dt_chiusura_commessa)) AS TotGiorni FROM [bi].[OFF_commesse] c JOIN [bi].[OFF_veicoli] v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE c.dt_chiusura_commessa IS NOT NULL GROUP BY v.targa_veicolo_officina ) SELECT targa_veicolo_officina, TotGiorni, RANK() OVER (ORDER BY TotGiorni DESC) AS Ranking FROM DurataCommessa;
+
+Riferimento:
+WITH WorkshopDays AS ( SELECT v.targa_veicolo_officina, SUM(DATEDIFF(day, c.dt_apertura_commessa, c.dt_chiusura_commessa)) AS TotalDays FROM [bi].[OFF_commesse] c JOIN [bi].[OFF_veicoli] v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE c.dt_chiusura_commessa IS NOT NULL GROUP BY v.targa_veicolo_officina ) SELECT targa_veicolo_officina, TotalDays, RANK() OVER (ORDER BY TotalDays DESC) AS Ranking FROM WorkshopDays;
+Match (EM): False
+
+--- Esempio 131 ---
+Domanda: Mostra i contratti dove il valore di listino è uguale al valore netto (nessuno sconto/costo).
+Predizione:
+SELECT nr_contratto, imp_netto_listino_contratto FROM [bi].[AUTO_contratti] WHERE imp_netto_listino_contratto = imp_netto_contratto;
+
+Riferimento:
+SELECT nr_contratto FROM [bi].[AUTO_contratti] WHERE imp_netto_listino_contratto = imp_netto_contratto;
+Match (EM): False
+
+--- Esempio 132 ---
+Domanda: Mostra il numero di contratti per mese di apertura nell'anno corrente.
+Predizione:
+SELECT YEAR(c.dt_apertura_contratto) AS Anno, MONTH(c.dt_apertura_contratto) AS Mese, COUNT(c.id_contratto) AS NumContratti FROM [bi].[AUTO_contratti] c GROUP BY YEAR(c.dt_apertura_contratto), MONTH(c.dt_apertura_contratto) ORDER BY Anno, Mese;
+
+Riferimento:
+SELECT MONTH(dt_apertura_contratto) AS Mese, COUNT(id_contratto) AS NumeroContratti FROM [bi].[AUTO_contratti] WHERE YEAR(dt_apertura_contratto) = YEAR(GETDATE()) GROUP BY MONTH(dt_apertura_contratto) ORDER BY Mese;
+Match (EM): False
+
+--- Esempio 133 ---
+Domanda: Elenca le officine ordinate per numero medio di righe per commessa.
+Predizione:
+SELECT o.descr_officina, AVG(C.RighePerCommessa) AS MediaRighe, STDEV(C.RighePerCommessa) AS DevStdRighe FROM (SELECT id_officina, COUNT(id_commessa) AS RighePerCommessa FROM [bi].[OFF_commesse_righe] GROUP BY id_officina) AS C JOIN [bi].[OFF_officine] AS o ON C.id_officina = o.id_officina GROUP BY o.descr_officina ORDER BY MediaRighe DESC;
+
+Riferimento:
+WITH RighePerCommessa AS ( SELECT c.id_officina, COUNT(r.nr_riga_commessa) AS NumRighe FROM [bi].[OFF_commesse] c JOIN [bi].[OFF_commesse_righe] r ON c.id_commessa = r.id_commessa GROUP BY c.id_officina, c.id_commessa ) SELECT o.descr_officina, AVG(CAST(rpc.NumRighe AS FLOAT)) AS MediaRighe FROM RighePerCommessa rpc JOIN [bi].[OFF_officine] o ON rpc.id_officina = o.id_officina GROUP BY o.descr_officina ORDER BY MediaRighe DESC;
+Match (EM): False
+
+--- Esempio 134 ---
+Domanda: Qual è il costo totale delle lavorazioni nella commessa 'COM4444'?
+Predizione:
+SELECT SUM(costo_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_commesse] AS c ON l.id_commessa = c.id_commessa WHERE c.nr_commessa = 'COM4444';
+
+Riferimento:
+SELECT SUM(costo_lavorazione) FROM [bi].[OFF_commesse_lavorazioni] AS l JOIN [bi].[OFF_commesse] AS c ON l.id_commessa = c.id_commessa WHERE c.nr_commessa = 'COM4444';
+Match (EM): True
+
+--- Esempio 135 ---
+Domanda: Quali codici di tipo intervento sono associati a inconvenienti non addebitati al cliente?
+Predizione:
+SELECT DISTINCT it.codice_tipo_intervento FROM [bi].[OFF_commesse_inconvenienti] AS i JOIN [bi].[OFF_interventi_tipi] AS it ON i.id_tipo_intervento = it.id_tipo_intervento WHERE i.tipo_carico_cliente_inconveniente <> 'Cliente';
+
+Riferimento:
+SELECT DISTINCT it.codice_tipo_intervento FROM [bi].[OFF_commesse_inconvenienti] AS i JOIN [bi].[OFF_interventi_tipi] AS it ON i.id_tipo_intervento = it.id_tipo_intervento WHERE i.tipo_carico_cliente_inconveniente <> 'Cliente';
+Match (EM): True
+
+--- Esempio 136 ---
+Domanda: Elenca i clienti (descrittivo) con contratti stipulati in almeno 3 aree differenti.
+Predizione:
+SELECT cli.descr_cliente, COUNT(DISTINCT ac.id_area) AS NumAree FROM [bi].[AUTO_contratti] ac JOIN [bi].[AUTO_clienti] cli ON ac.id_cliente = cli.id_cliente GROUP BY cli.descr_cliente HAVING COUNT(DISTINCT ac.id_area) >= 3;
+
+Riferimento:
+SELECT cli.descr_cliente FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_clienti] cli ON c.id_cliente = cli.id_cliente GROUP BY cli.descr_cliente HAVING COUNT(DISTINCT c.id_area) >= 3;
+Match (EM): False
+
+--- Esempio 137 ---
+Domanda: Elenca i codici articolo usati con quantità 1 nella commessa 'COM8877'.
+Predizione:
+SELECT DISTINCT codice_articolo_commessa FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_commesse] AS c ON r.id_commessa = c.id_commessa WHERE c.nr_commessa = 'COM8877' AND r.qta_commessa = 1;
+
+Riferimento:
+SELECT codice_articolo_commessa FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_commesse] AS c ON r.id_commessa = c.id_commessa WHERE c.nr_commessa = 'COM8877' AND r.qta_commessa = 1 AND r.codice_articolo_commessa IS NOT NULL;
+Match (EM): False
+
+--- Esempio 138 ---
+Domanda: Trova gli ID delle commesse che hanno registrato almeno un inconveniente.
+Predizione:
+SELECT DISTINCT id_commessa FROM [bi].[OFF_commesse_inconvenienti];
+
+Riferimento:
+SELECT DISTINCT id_commessa FROM [bi].[OFF_commesse_inconvenienti];
+Match (EM): True
+
+--- Esempio 139 ---
+Domanda: Qual è la descrizione del tipo costo/ricavo più ricorrente nella vista redditività?
+Predizione:
+SELECT TOP 1 descr_tipo_costo_ricavo_redd, COUNT(*) AS Frequenza FROM [bi].[AUTO_contratti_redd] GROUP BY descr_tipo_costo_ricavo_redd ORDER BY Frequenza DESC;
+
+Riferimento:
+SELECT TOP 1 descr_tipo_costo_ricavo_redd, COUNT(*) AS Frequenza FROM [bi].[AUTO_contratti_redd] WHERE descr_tipo_costo_ricavo_redd IS NOT NULL GROUP BY descr_tipo_costo_ricavo_redd ORDER BY Frequenza DESC;
+Match (EM): False
+
+--- Esempio 140 ---
+Domanda: Trova i noleggi di tipo affidamento 'Noleggio a Breve'.
+Predizione:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE descr_tipo_affidamento_noleggio = 'Noleggio a Breve';
+    
+Riferimento:
+SELECT id_riga_noleggio, targa_noleggio FROM [bi].[OFF_noleggi] WHERE descr_tipo_affidamento_noleggio = 'Noleggio a Breve';
+Match (EM): True
+
+--- Esempio 141 ---
+Domanda: Elenca le auto (targa) che hanno avuto più lavorazioni esterne che interne (conteggio righe).
+Predizione:
+SELECT v.targa_veicolo_officina, COUNT(l.id_commessa) AS NumLavorazioniEsterne FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa JOIN [bi].[OFF_veicoli] v ON c.id_veicolo_officina = v.id_veicolo_officina GROUP BY v.targa_veicolo_officina HAVING COUNT(l.id_commessa) > (SELECT COUNT(l.id_commessa) FROM [bi].[OFF_commesse_lavorazioni] l JOIN [bi].[OFF_commesse] c ON l.id_commessa = c.id_commessa JOIN [bi].[OFF_veicoli] v ON c.id_veicolo_officina = v.id_veicolo_officina WHERE l.gruppo_voce_lavorazione = 13) ORDER BY NumLavorazioniEsterne DESC;
+    
+Riferimento:
+SELECT v.targa_veicolo_officina FROM [bi].[OFF_commesse] c JOIN [bi].[OFF_veicoli] v ON c.id_veicolo_officina = v.id_veicolo_officina JOIN ( SELECT id_commessa, SUM(CASE WHEN gruppo_voce_lavorazione = 13 THEN 1 ELSE 0 END) AS Ext, SUM(CASE WHEN gruppo_voce_lavorazione <> 13 THEN 1 ELSE 0 END) AS Int FROM [bi].[OFF_commesse_lavorazioni] GROUP BY id_commessa ) AS l ON c.id_commessa = l.id_commessa WHERE l.Ext > l.Int;
+Match (EM): False
+
+--- Esempio 142 ---
+Domanda: Qual è il CAP più frequente tra i contatti?
+Predizione:
+SELECT TOP 1 cap_contatto, COUNT(*) AS Frequenza FROM [bi].[CONTT_contatti] GROUP BY cap_contatto ORDER BY Frequenza DESC;
+
+Riferimento:
+SELECT TOP 1 cap_contatto, COUNT(*) AS Frequenza FROM [bi].[CONTT_contatti] WHERE cap_contatto IS NOT NULL GROUP BY cap_contatto ORDER BY Frequenza DESC;
+Match (EM): False
+
+--- Esempio 143 ---
+Domanda: Elenca i tipi di vendita (descrizione) utilizzati nell'area 'Nord-Ovest'.
+Predizione:
+SELECT DISTINCT tv.descr_tipo_vendita FROM [bi].[AUTO_tipi_vendita] tv JOIN [bi].[AUTO_canali_vendita] cv ON tv.id_tipo_vendita = cv.id_tipo_vendita_vendita JOIN [bi].[AUTO_aree] a ON cv.id_canale_vendita = a.id_area WHERE a.descr_area LIKE '%Nord-Ovest%';
+
+Riferimento:
+SELECT DISTINCT tv.descr_tipo_vendita FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_aree] a ON c.id_area = a.id_area JOIN [bi].[AUTO_tipi_vendita] tv ON c.id_tipo_vendita = tv.id_tipo_vendita WHERE a.descr_area = 'Nord-Ovest';
+Match (EM): False
+
+--- Esempio 144 ---
+Domanda: Quali codici articolo sono stati usati in commesse per clienti del gruppo 'Flotte'?
+Predizione:
+SELECT DISTINCT r.codice_articolo_commessa FROM [bi].[OFF_commesse_righe] r JOIN [bi].[OFF_commesse] c ON r.id_commessa = c.id_commessa JOIN [bi].[OFF_clienti] cli ON c.id_cliente_officina = cli.id_cliente_officina WHERE cli.gruppo_cliente_officina = 'Flotte' AND r.codice_articolo_commessa IS NOT NULL;
+
+Riferimento:
+SELECT DISTINCT r.codice_articolo_commessa FROM [bi].[OFF_commesse_righe] r JOIN [bi].[OFF_commesse] c ON r.id_commessa = c.id_commessa JOIN [bi].[OFF_clienti] cli ON c.id_cliente_officina = cli.id_cliente_officina WHERE cli.gruppo_cliente_officina = 'Flotte' AND r.codice_articolo_commessa IS NOT NULL;
+Match (EM): True
+
+--- Esempio 145 ---
+Domanda: Elenca i 3 gruppi canale vendita con il minor rapporto finanziati/totale contratti.
+Predizione:
+SELECT TOP 3 cv.gruppo_canale_vendita, CAST(SUM(CASE WHEN c.has_finanziamento_contratto = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(c.id_contratto) AS RapportoFinanziati FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_canali_vendita] cv ON c.id_canale_vendita = cv.id_canale_vendita GROUP BY cv.gruppo_canale_vendita ORDER BY RapportoFinanziati ASC;
+
+Riferimento:
+SELECT TOP 3 cv.gruppo_canale_vendita, CAST(SUM(CASE WHEN c.has_finanziamento_contratto = 1 THEN 1 ELSE 0 END) AS FLOAT) / COUNT(c.id_contratto) AS RapportoFinanziati FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_canali_vendita] cv ON c.id_canale_vendita = cv.id_canale_vendita GROUP BY cv.gruppo_canale_vendita ORDER BY RapportoFinanziati ASC;
+Match (EM): True
+
+--- Esempio 146 ---
+Domanda: Mostra i tipi di costo/ricavo (descrizione) che hanno almeno una voce con costo consuntivo > 5000.
+Predizione:
+SELECT DISTINCT descr_tipo_costo_ricavo_redd FROM [bi].[AUTO_contratti_redd] WHERE codice_tipo_costo_ricavo_redd IN (SELECT codice_tipo_costo_ricavo_redd FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_consuntivo_redd > 5000);
+
+Riferimento:
+SELECT DISTINCT descr_tipo_costo_ricavo_redd FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_consuntivo_redd > 5000;
+Match (EM): False
+
+--- Esempio 147 ---
+Domanda: Mostrami le auto Fiat 500 vendute al cliente con codice fiscale 'VRDGPP80A01H501X'.
+Predizione:
+SELECT v.targa_veicolo FROM [bi].[AUTO_veicoli] AS v JOIN [bi].[AUTO_contratti] AS c ON v.id_veicolo = c.id_veicolo JOIN [bi].[AUTO_clienti] AS cli ON c.id_cliente = cli.id_cliente WHERE cli.codice_fiscale_cliente = 'VRDGPP80A01H501X' AND v.marca_veicolo = 'Fiat' AND v.modello_veicolo = '500';
+
+Riferimento:
+SELECT v.targa_veicolo, v.versione_veicolo, c.dt_apertura_contratto FROM [bi].[AUTO_contratti] AS c JOIN [bi].[AUTO_clienti] AS cli ON c.id_cliente = cli.id_cliente JOIN [bi].[AUTO_veicoli] AS v ON c.id_veicolo = v.id_veicolo WHERE cli.codice_fiscale_cliente = 'VRDGPP80A01H501X' AND v.marca_veicolo = 'FIAT' AND v.modello_veicolo = '500';
+Match (EM): False
+
+--- Esempio 148 ---
+Domanda: Qual è la differenza totale tra ricavo consuntivo e costo consuntivo (margine totale)?
+Predizione:
+SELECT SUM(ISNULL(r.imp_ricavo_consuntivo_redd, 0) - ISNULL(r.imp_costo_consuntivo_redd, 0)) FROM [bi].[AUTO_contratti_redd] r;
+
+Riferimento:
+SELECT SUM(ISNULL(imp_ricavo_consuntivo_redd, 0) - ISNULL(imp_costo_consuntivo_redd, 0)) FROM [bi].[AUTO_contratti_redd];
+Match (EM): False
+
+--- Esempio 149 ---
+Domanda: Qual è il totale delle ore teoriche per l'officina 'Top Car' nell'anno corrente?
+Predizione:
+SELECT SUM(p.ore_teoriche_presenza) FROM [bi].[OFF_presenze] AS p JOIN [bi].[OFF_officine] AS o ON p.id_officina = o.id_officina WHERE o.descr_officina = 'Top Car' AND YEAR(p.dt_presenza) = YEAR(GETDATE());
+    
+Riferimento:
+SELECT SUM(p.ore_teoriche_presenza) FROM [bi].[OFF_presenze] AS p JOIN [bi].[OFF_officine] AS o ON p.id_officina = o.id_officina WHERE o.descr_officina = 'Top Car' AND YEAR(p.dt_presenza) = YEAR(GETDATE());
+Match (EM): True
+
+--- Esempio 150 ---
+Domanda: Qual è il costo previsto medio suddiviso per tipo di costo/ricavo?
+Predizione:
+SELECT descr_tipo_costo_ricavo_redd, AVG(imp_costo_previsto_redd) AS CostoPrevMedio FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_previsto_redd IS NOT NULL GROUP BY descr_tipo_costo_ricavo_redd;
+
+Riferimento:
+SELECT descr_tipo_costo_ricavo_redd, AVG(imp_costo_previsto_redd) AS CostoPrevistoMedio FROM [bi].[AUTO_contratti_redd] WHERE imp_costo_previsto_redd IS NOT NULL GROUP BY descr_tipo_costo_ricavo_redd;
+Match (EM): False
+
+--- Esempio 151 ---
+Domanda: Quali sono i 3 tipi di contratto con la maggiore varianza (deviazione standard) nell'importo netto?
+Predizione:
+SELECT TOP 3 ct.descr_tipo_contratto, STDEV(imp_netto_contratto) AS StdDev FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_contratti_tipi] ct ON c.id_tipo_contratto = ct.id_tipo_contratto GROUP BY ct.descr_tipo_contratto ORDER BY StdDev DESC;
+
+Riferimento:
+SELECT TOP 3 ct.descr_tipo_contratto, STDEV(c.imp_netto_contratto) AS StDevImporto FROM [bi].[AUTO_contratti] c JOIN [bi].[AUTO_contratti_tipi] ct ON c.id_tipo_contratto = ct.id_tipo_contratto GROUP BY ct.descr_tipo_contratto ORDER BY StDevImporto DESC;
+Match (EM): False
+
+--- Esempio 152 ---
+Domanda: Trova le righe di commessa gestite dall'esecutore di nome 'Mario Bianchi'.
+Predizione:
+SELECT r.id_commessa, r.nr_riga_commessa FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_esecutori] AS e ON r.id_esecutore = e.id_esecutore WHERE e.descr_esecutore = 'Mario Bianchi';
+    
+Riferimento:
+SELECT r.id_commessa, r.nr_riga_commessa FROM [bi].[OFF_commesse_righe] AS r JOIN [bi].[OFF_esecutori] AS e ON r.id_esecutore = e.id_esecutore WHERE e.descr_esecutore = 'Mario Bianchi';
+Match (EM): True
+
+--- Esempio 153 ---
+Domanda: Elenca le commesse per cui il veicolo era pronto prima della data prevista di consegna.
+Predizione:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE dt_veicolo_pronto_commessa < dt_previsione_consegna_commessa;
+
+Riferimento:
+SELECT nr_commessa FROM [bi].[OFF_commesse] WHERE dt_veicolo_pronto_commessa < dt_previsione_consegna_commessa;
+Match (EM): True
+
+--- Esempio 154 ---
+Domanda: Quanti contatti hanno un indirizzo email valido (contiene '@' e '.')?
+Predizione:
+SELECT COUNT(id_contatto) FROM [bi].[CONTT_contatti] WHERE email_contatto LIKE '%@%' AND email_contatto LIKE '%.%';
+
+Riferimento:
+SELECT COUNT(id_contatto) FROM [bi].[CONTT_contatti] WHERE email_contatto LIKE '%@%.%'; 
+Match (EM): False
+
